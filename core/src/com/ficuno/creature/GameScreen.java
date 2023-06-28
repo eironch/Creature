@@ -50,6 +50,5 @@ public class GameScreen extends CreatureScreen {
 
     @Override
     public void dispose() {
-        renderer.frigidTexture.dispose();
     }
 }

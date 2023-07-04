@@ -8,7 +8,7 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(60);
-		config.setWindowedMode(960, 540);
+		config.setWindowedMode(Creature.WIDTH, Creature.HEIGHT);
 		config.useVsync(true);
 		config.setTitle("Creature");
 		new Lwjgl3Application(new Creature(), config);

@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 public class GameScreen extends CreatureScreen {
     Main main;
-    Renderer renderer;
     float currentTime;
 
     public GameScreen(Game game) {super(game);}
@@ -15,7 +14,6 @@ public class GameScreen extends CreatureScreen {
     @Override
     public void show() {
         main = new Main();
-        renderer = new Renderer(main);
     }
 
     @Override
@@ -25,12 +23,12 @@ public class GameScreen extends CreatureScreen {
         currentTime = TimeUtils.nanosToMillis(TimeUtils.nanoTime());
 
         main.update(delta);
-        renderer.render(delta);
     }
 
     @Override
     public void resize(int width, int height) {
 
+        //main.renderer.viewport.update(width, height);
     }
 
     @Override

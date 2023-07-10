@@ -19,12 +19,19 @@ public class Assets {
     Texture descBoxTexture;
     Texture cardBackgroundTexture;
     Texture spotlightTexture;
+    Texture playIconsTexture;
     TextureRegion helpIcon;
     TextureRegion menuIcon;
     TextureRegion bagIcon;
     TextureRegion actionsIcon;
     TextureRegion drawPileIcon;
     TextureRegion discardPileIcon;
+    TextureRegion enemyAttackPlayIcon;
+    TextureRegion enemyDefendPlayIcon;
+    TextureRegion enemySpellPlayIcon;
+    TextureRegion playerAttackPlayIcon;
+    TextureRegion playerDefendPlayIcon;
+    TextureRegion playerSpellPlayIcon;
     TextureRegion[] encounterBgTextures = new TextureRegion[4];
     TextureRegion yourUIBar;
     TextureRegion enemyUIBar;
@@ -41,7 +48,6 @@ public class Assets {
         loadAssets();
         createAssets();
     }
-
 
     public void loadAssets(){
         idCardsTexture = new Texture(Gdx.files.internal("idCardsTexture.png"));
@@ -60,7 +66,7 @@ public class Assets {
 
         descBoxTexture = new Texture(Gdx.files.internal("descBoxTexture.png"));
 
-        Texture psykiesTexture = new Texture(Gdx.files.internal("psykiesTexture.png"));
+        playIconsTexture = new Texture(Gdx.files.internal("playIconsTexture.png"));
     }
 
     public void createAssets() {
@@ -108,6 +114,14 @@ public class Assets {
 
         yourUIBar = new TextureRegion(splitTexture(uiBarsTexture, 0, 1048, 160)[0]);
         enemyUIBar = new TextureRegion(splitTexture(uiBarsTexture, 1, 1048, 160)[0]);
+
+        enemyAttackPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 0, 80, 64)[0]);
+        enemyDefendPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 0, 80, 64)[1]);
+        enemySpellPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 0, 80, 64)[2]);
+
+        playerAttackPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 1, 80, 64)[0]);
+        playerDefendPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 1, 80, 64)[1]);
+        playerSpellPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 1, 80, 64)[2]);
     }
 
     public static TextureRegion[] splitTexture(Texture texture, int index, int width, int height){
@@ -115,6 +129,7 @@ public class Assets {
     }
     public static TextureRegion[] mirrorTexture(Texture texture, int index, int width, int height){
         TextureRegion[] mirror = new TextureRegion(texture).split(width,height)[index];
+
         for (TextureRegion region: mirror){
             region.flip(true, false);
         }

@@ -7,13 +7,22 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Card {
+    final static String[] attackCards = new String[]{
+            "Maul",
+            "Strike",
+    };
+
     Main main;
     Psykey currentPsykey;
     Psykey enemyPsykey;
-    TextureRegion[] cardsInHand;
-    List<String[]> yourDrawPileCardTypesNames;
-    List<String[]> yourHandPileCardTypesNames;
-    List<String[]> yourDiscardPileCardTypesNames;
+    TextureRegion[] handPileTextures;
+    List<String[]> playerDrawPileCardTypesNames;
+    List<String[]> playerHandPileCardTypesNames;
+    List<String[]> playerDiscardPileCardTypesNames;
+    List<String[]> enemyDrawPileCardTypesNames;
+    List<String[]> enemyHandPileCardTypesNames;
+    List<String[]> enemyDiscardPileCardTypesNames;
+
     Assets  assets;
     public Card(Main main){
         this.main = main;
@@ -21,15 +30,52 @@ public class Card {
         this.enemyPsykey = main.enemyPsykey;
         this.assets = main.assets;
 
-        yourDrawPileCardTypesNames = new ArrayList<>();
-        yourHandPileCardTypesNames = new ArrayList<>();
-        yourDiscardPileCardTypesNames = new ArrayList<>();
+        playerDrawPileCardTypesNames = new ArrayList<>();
+        playerHandPileCardTypesNames = new ArrayList<>();
+        playerDiscardPileCardTypesNames = new ArrayList<>();
+        enemyDrawPileCardTypesNames = new ArrayList<>();
+        enemyHandPileCardTypesNames = new ArrayList<>();
+        enemyDiscardPileCardTypesNames = new ArrayList<>();
 
-        cardsInHand = new TextureRegion[6];
+        handPileTextures = new TextureRegion[6];
     }
 
     public void setDrawPile(){
-        yourDrawPileCardTypesNames.addAll(Arrays.asList(currentPsykey.deck));
+        playerDrawPileCardTypesNames.addAll(Arrays.asList(currentPsykey.deck));
+        enemyDrawPileCardTypesNames.addAll(Arrays.asList(enemyPsykey.deck));
+    }
+
+    public void drawStartCards(){
+        for (int x = 0; x < 6; x++){
+            drawCard();
+            enemyDrawCard();
+        }
+    }
+
+    public void drawCard(){
+        int randIndex = (int) (Math.random() * playerDrawPileCardTypesNames.size());
+
+        playerHandPileCardTypesNames.add(playerDrawPileCardTypesNames.get(randIndex));
+        playerDrawPileCardTypesNames.remove(randIndex);
+    }
+
+    public void reshuffleDrawPile(){
+        playerDrawPileCardTypesNames.addAll(playerDiscardPileCardTypesNames);
+
+        playerDiscardPileCardTypesNames.clear();
+    }
+
+    public void enemyDrawCard(){
+        int randIndex = (int) (Math.random() * enemyDrawPileCardTypesNames.size());
+
+        enemyHandPileCardTypesNames.add(enemyDrawPileCardTypesNames.get(randIndex));
+        enemyDrawPileCardTypesNames.remove(randIndex);
+    }
+
+    public void enemyReshuffleDrawPile(){
+        enemyDrawPileCardTypesNames.addAll(enemyDiscardPileCardTypesNames);
+
+        enemyDiscardPileCardTypesNames.clear();
     }
 
     public TextureRegion getTexture(String cardType, String cardName){
@@ -86,22 +132,4 @@ public class Card {
         return null;
     }
 
-    public void drawStartCards(){
-        for (int x = 0; x < 6; x++){
-            drawCard();
-        }
-    }
-
-    public void drawCard(){
-        int randIndex = (int) (Math.random() * yourDrawPileCardTypesNames.size());
-
-        yourHandPileCardTypesNames.add(yourDrawPileCardTypesNames.get(randIndex));
-        yourDrawPileCardTypesNames.remove(randIndex);
-    }
-
-    public void reshuffleDrawPile(){
-        yourDrawPileCardTypesNames.addAll(yourDiscardPileCardTypesNames);
-
-        yourDiscardPileCardTypesNames.clear();
-    }
 }

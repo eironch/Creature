@@ -1,6 +1,7 @@
 package com.ficuno.creature;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,12 @@ public class Main {
     List<Integer> handCardSelected = new ArrayList<>();
     Psykey psykeyRef;
     Psykey enemyPsykeyRef;
-
+    final static int PRE_TURN = 0;
+    final static int ENEMY_TURN = 1;
+    final static int PLAYER_TURN = 2;
+    int turn = ENEMY_TURN;
+    TextureRegion enemyPlayIcon;
+    TextureRegion playerPlayIcon;
     public Main () {loadGame();}
 
     public void loadGame(){
@@ -40,9 +46,6 @@ public class Main {
         renderer = new Renderer(this);
         controller = new Controller(this);
         encounter = new Encounter(this);
-
-        card.setDrawPile();
-        card.drawStartCards();
     }
 
     public void update(float deltaTime){

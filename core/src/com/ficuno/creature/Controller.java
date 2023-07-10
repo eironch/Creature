@@ -10,21 +10,26 @@ public class Controller {
     Card card;
     TouchRegion touchRegion;
     Renderer renderer;
+    Psykey enemyPsykey;
+    Psykey currentPsykey;
     public Controller(Main main){
         this.main = main;
         this.card = main.card;
         this.renderer = main.renderer;
         this.touchRegion = main.touchRegion;
+        this.currentPsykey = main.psykeyRef;
+        this.enemyPsykey = main.enemyPsykey;
     }
 
     public void processKeys(float deltaTime){
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
-                && card.yourDrawPileCardTypesNames.size() > 0
-                && card.yourHandPileCardTypesNames.size() < 6){
+                && card.playerDrawPileCardTypesNames.size() > 0
+                && card.playerHandPileCardTypesNames.size() < 6){
             card.drawCard();
 
             touchRegion.cardTouchRegionPolys.add(new Polygon(new float[]{0, 0, 112, 0, 112, 192, 0, 192}));
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && card.yourHandPileCardTypesNames.size() < 6){
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
+                && card.playerHandPileCardTypesNames.size() < 6){
             card.reshuffleDrawPile();
             card.drawCard();
 
@@ -43,16 +48,22 @@ public class Controller {
             main.enemyPsykey.healthPoints += 2;
         }
 
-
         if (Gdx.input.justTouched()){
             for (int x = 0; x < touchRegion.cardTouchRegionPolys.size(); x++){
                 if (touchRegion.cardTouchRegionPolys.get(x).contains(renderer.touchPos.x,
                         renderer.touchPos.y)){
                     if (main.handCardSelected.get(x) == 40){
-                        card.yourDiscardPileCardTypesNames.add(card.yourHandPileCardTypesNames.get(x));
+                        //&& main.turn == Main.PLAYER_TURN
+                        if (card.playerHandPileCardTypesNames.get(x).length == 3){
+                            enemyPsykey.healthPoints -= Integer.parseInt(card.playerHandPileCardTypesNames.get(x)[2]);
+                        }
 
-                        card.yourHandPileCardTypesNames.remove(x);
+                        card.playerDiscardPileCardTypesNames.add(card.playerHandPileCardTypesNames.get(x));
+
+                        card.playerHandPileCardTypesNames.remove(x);
                         touchRegion.cardTouchRegionPolys.remove(x);
+
+                        main.turn = Main.PRE_TURN;
 
                         break;
                     }
@@ -62,7 +73,6 @@ public class Controller {
                     }
 
                     main.handCardSelected.set(x, 40);
-
 
                     break;
                 }

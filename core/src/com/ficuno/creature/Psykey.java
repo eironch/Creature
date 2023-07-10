@@ -6,7 +6,7 @@ public class Psykey {
     //
     //
     //
-
+    //
     final static String[] names= new String[]{
             "Vainhound",
             "Scaredcrow",
@@ -133,15 +133,26 @@ public class Psykey {
         }
     }
 
+    public String getStats(String cardName){
+        switch (cardName){
+            case "Maul":
+                return "15";
+            case "Strike":
+                return "15";
+        }
+
+        return "0";
+    }
+
     public void instantiatePsykeyCards(int index){
         switch (index){
             case 0:
                 deck = new String[][]{
-                        {"Ego", "Maul"},
-                        {"Ego", "Maul"},
-                        {"Ego", "Maul"},
-                        {"Superego", "Maul"},
-                        {"Id", "Maul"},
+                        {"Ego", "Maul", getStats("Maul")},
+                        {"Ego", "Maul", getStats("Maul")},
+                        {"Ego", "Maul", getStats("Maul")},
+                        {"Superego", "Maul", getStats("Maul")},
+                        {"Id", "Maul", getStats("Maul")},
                         {"Ego", "Block"},
                         {"Ego", "Block"},
                         {"Ego", "Block"},
@@ -155,11 +166,11 @@ public class Psykey {
 
             case 7:
                 deck = new String[][]{
-                        {"Superego", "Strike"},
-                        {"Superego", "Strike"},
-                        {"Ego", "Strike"},
-                        {"Ego", "Strike"},
-                        {"Id", "Strike"},
+                        {"Superego", "Strike", getStats("Strike")},
+                        {"Superego", "Strike", getStats("Strike")},
+                        {"Ego", "Strike", getStats("Strike")},
+                        {"Ego", "Strike", getStats("Strike")},
+                        {"Id", "Strike", getStats("Strike")},
                         {"Superego", "Block"},
                         {"Superego", "Block"},
                         {"Ego", "Block"},

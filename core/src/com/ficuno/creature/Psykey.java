@@ -1,12 +1,12 @@
 package com.ficuno.creature;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import java.util.Objects;
-
 public class Psykey {
+    //
+    //
+    //
+
     final static String[] names= new String[]{
             "Vainhound",
             "Scaredcrow",
@@ -64,16 +64,18 @@ public class Psykey {
             {0,0,3},
             {0,0,0},
     };
-
-    final static int[] zenPointsValues= new int[]{
+    //
+    //
+    //
+    final static int[] healthPointsValues= new int[]{
+            40,
             0,
             0,
             0,
             0,
             0,
             0,
-            0,
-            0,
+            55,
             0,
             0,
             0,
@@ -92,17 +94,18 @@ public class Psykey {
     int idProwessValue;
     int egoProwessValue;
     int superegoProwessValue;
-    int zenPoints;
+    int healthPoints;
     String oddity;
     String[][] deck;
-    static TextureRegion[] psykeyTextures = new TextureRegion[Creature.maxPsykies];
-    static TextureRegion[] psykeyTexturesMirror = new TextureRegion[Creature.maxPsykies];
     TextureRegion texture;
     TextureRegion textureMirror;
+    Assets assets;
 
     public Psykey(Main main, String name){
         this.main = main;
         this.card = main.card;
+        this.assets = new Assets();
+
         instantiatePsykey(name);
     }
 
@@ -118,10 +121,10 @@ public class Psykey {
                 egoProwessValue = prowessTraitValues[x][1];
                 superegoProwessValue = prowessTraitValues[x][2];
 
-                zenPoints = zenPointsValues[x];
+                healthPoints = healthPointsValues[x];
 
-                texture = psykeyTextures[x];
-                textureMirror = psykeyTexturesMirror[x];
+                texture = assets.psykeyTextures[x];
+                textureMirror = assets.psykeyTexturesMirror[x];
 
                 instantiatePsykeyCards(x);
 
@@ -130,61 +133,40 @@ public class Psykey {
         }
     }
 
-    public static void loadAndCreateAssets(){
-        Texture psykiesTexture = new Texture(Gdx.files.internal("psykiesTexture.png"));
-
-        for (int x = 0; x < Creature.maxPsykies; x++){
-            psykeyTextures[x] = new TextureRegion(splitTexture(psykiesTexture, 0, 160, 160)[x]);
-            psykeyTexturesMirror[x] = new TextureRegion(mirrorTexture(psykiesTexture, 0, 160, 160)[x]);
-        }
-    }
-
-    public static TextureRegion[] splitTexture(Texture texture, int index, int width, int height){
-        return new TextureRegion(texture).split(width,height)[index];
-    }
-    public static TextureRegion[] mirrorTexture(Texture texture, int index, int width, int height){
-        TextureRegion[] mirror = new TextureRegion(texture).split(width,height)[index];
-        for (TextureRegion region: mirror){
-            region.flip(true, false);
-        }
-
-        return mirror;
-    }
-
     public void instantiatePsykeyCards(int index){
         switch (index){
             case 0:
                 deck = new String[][]{
-                        {"Maul", "Ego"},
-                        {"Maul", "Ego"},
-                        {"Maul", "Ego"},
-                        {"Maul", "Superego"},
-                        {"Maul", "Id"},
-                        {"Block", "Ego"},
-                        {"Block", "Ego"},
-                        {"Block", "Ego"},
-                        {"Block", "Superego"},
-                        {"Block", "Id"},
-                        {"Slander", "Ego"},
-                        {"Battlecry", "Ego"}
+                        {"Ego", "Maul"},
+                        {"Ego", "Maul"},
+                        {"Ego", "Maul"},
+                        {"Superego", "Maul"},
+                        {"Id", "Maul"},
+                        {"Ego", "Block"},
+                        {"Ego", "Block"},
+                        {"Ego", "Block"},
+                        {"Superego", "Block"},
+                        {"Id", "Block"},
+                        {"Ego", "Slander"},
+                        {"Ego", "Battlecry"}
                 };
 
                 break;
 
             case 7:
                 deck = new String[][]{
-                        {"Strike", "Superego"},
-                        {"Strike", "Superego"},
-                        {"Strike", "Ego"},
-                        {"Strike", "Ego"},
-                        {"Strike", "Id"},
-                        {"Block", "Superego"},
-                        {"Block", "Superego"},
-                        {"Block", "Ego"},
-                        {"Block", "Ego"},
-                        {"Block", "Id"},
-                        {"Slander", "Superego"},
-                        {"Battlecry", "Ego"}
+                        {"Superego", "Strike"},
+                        {"Superego", "Strike"},
+                        {"Ego", "Strike"},
+                        {"Ego", "Strike"},
+                        {"Id", "Strike"},
+                        {"Superego", "Block"},
+                        {"Superego", "Block"},
+                        {"Ego", "Block"},
+                        {"Ego", "Block"},
+                        {"Id", "Block"},
+                        {"Superego", "Slander"},
+                        {"Ego", "Battlecry"}
                 };
 
                 break;

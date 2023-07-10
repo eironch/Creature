@@ -18,8 +18,8 @@ public class MainMenuScreen extends CreatureScreen {
     GlyphLayout glyphLayout;
     float w;
     final static float GAME_WORLD_WIDTH = 100;
-    final static float GAME_WORLD_HEIGHT = 50;
-    final static float aspectRatio = (float) Gdx.graphics.getWidth() / (float) Gdx.graphics.getHeight();
+    final static float GAME_WORLD_HEIGHT = 56;
+
 
     private final Viewport viewport;
     public MainMenuScreen(Game game){
@@ -31,7 +31,7 @@ public class MainMenuScreen extends CreatureScreen {
         glyphLayout = new GlyphLayout();
 
         cam = new OrthographicCamera();
-        viewport = new ExtendViewport(GAME_WORLD_WIDTH * aspectRatio, GAME_WORLD_HEIGHT, cam);
+        viewport = new ExtendViewport(GAME_WORLD_WIDTH * Main.aspectRatio, GAME_WORLD_HEIGHT, cam);
         cam.translate(GAME_WORLD_WIDTH/2, GAME_WORLD_HEIGHT/2);
 
     }
@@ -50,10 +50,8 @@ public class MainMenuScreen extends CreatureScreen {
         w = glyphLayout.width;
         font.draw(batch, glyphLayout, (GAME_WORLD_HEIGHT - w)/2, 90);
         batch.end();
-
         game.setScreen(new GameScreen(game));
         dispose();
-
         if (Gdx.input.isTouched()) {
             game.setScreen(new GameScreen(game));
             dispose();
@@ -68,6 +66,7 @@ public class MainMenuScreen extends CreatureScreen {
 
     @Override
     public void resize(int width, int height) {
+        Main.SCREEN_WIDTH = Gdx.graphics.getWidth();
         viewport.update(width, height);
     }
 

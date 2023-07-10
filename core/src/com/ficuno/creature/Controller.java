@@ -9,38 +9,50 @@ public class Controller {
     Main main;
     Card card;
     TouchRegion touchRegion;
+    Renderer renderer;
     public Controller(Main main){
         this.main = main;
         this.card = main.card;
+        this.renderer = main.renderer;
         this.touchRegion = main.touchRegion;
     }
 
     public void processKeys(float deltaTime){
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
-                && card.drawPileCardNames.size() > 0
-                && card.handPileCardNames.size() < 6){
+                && card.yourDrawPileCardTypesNames.size() > 0
+                && card.yourHandPileCardTypesNames.size() < 6){
             card.drawCard();
 
-            touchRegion.cardTouchRegionPoly.add(new Polygon(new float[]{0, 0, 112, 0, 112, 192, 0, 192}));
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && card.handPileCardNames.size() < 6){
+            touchRegion.cardTouchRegionPolys.add(new Polygon(new float[]{0, 0, 112, 0, 112, 192, 0, 192}));
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && card.yourHandPileCardTypesNames.size() < 6){
             card.reshuffleDrawPile();
             card.drawCard();
 
-            touchRegion.cardTouchRegionPoly.add(new Polygon(new float[]{0, 0, 112, 0, 112, 192, 0, 192}));
+            touchRegion.cardTouchRegionPolys.add(new Polygon(new float[]{0, 0, 112, 0, 112, 192, 0, 192}));
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.Q)){
+            main.currentPsykey.healthPoints -= 2;
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.E)){
+            main.currentPsykey.healthPoints += 2;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.I)){
+            main.enemyPsykey.healthPoints -= 2;
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.P)){
+            main.enemyPsykey.healthPoints += 2;
+        }
+
+
         if (Gdx.input.justTouched()){
-            for (int x = 0; x < touchRegion.cardTouchRegionPoly.size(); x++){
-                if (touchRegion.cardTouchRegionPoly.get(x).contains(Gdx.input.getX(),
-                        Main.SCREEN_HEIGHT - Gdx.input.getY())){
+            for (int x = 0; x < touchRegion.cardTouchRegionPolys.size(); x++){
+                if (touchRegion.cardTouchRegionPolys.get(x).contains(renderer.touchPos.x,
+                        renderer.touchPos.y)){
                     if (main.handCardSelected.get(x) == 40){
-                        card.discardPileCardNames.add(card.handPileCardNames.get(x));
-                        card.discardPileCardTypes.add(card.handPileCardTypes.get(x));
+                        card.yourDiscardPileCardTypesNames.add(card.yourHandPileCardTypesNames.get(x));
 
-                        card.handPileCardNames.remove(x);
-                        card.handPileCardTypes.remove(x);
-
-                        touchRegion.cardTouchRegionPoly.remove(x);
+                        card.yourHandPileCardTypesNames.remove(x);
+                        touchRegion.cardTouchRegionPolys.remove(x);
 
                         break;
                     }

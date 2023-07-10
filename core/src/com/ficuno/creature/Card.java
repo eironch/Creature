@@ -3,61 +3,49 @@ package com.ficuno.creature;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Card {
     Main main;
     Psykey currentPsykey;
     Psykey enemyPsykey;
-    int maxCards = 32;
     TextureRegion[] cardsInHand;
-    TextureRegion[] idCards;
-    TextureRegion[] egoCards;
-    TextureRegion[] superegoCards;
-    List<String> drawPileCardNames;
-    List<String> drawPileCardTypes;
-    List<String> handPileCardNames;
-    List<String> handPileCardTypes;
-    List<String> discardPileCardNames;
-    List<String> discardPileCardTypes;
+    List<String[]> yourDrawPileCardTypesNames;
+    List<String[]> yourHandPileCardTypesNames;
+    List<String[]> yourDiscardPileCardTypesNames;
+    Assets  assets;
     public Card(Main main){
         this.main = main;
         this.currentPsykey = main.currentPsykey;
         this.enemyPsykey = main.enemyPsykey;
+        this.assets = main.assets;
 
-        idCards = new TextureRegion[maxCards];
-        egoCards = new TextureRegion[maxCards];
-        superegoCards = new TextureRegion[maxCards];
-        drawPileCardNames = new ArrayList<>();
-        drawPileCardTypes = new ArrayList<>();
-        handPileCardNames = new ArrayList<>();
-        handPileCardTypes = new ArrayList<>();
-        discardPileCardNames = new ArrayList<>();
-        discardPileCardTypes = new ArrayList<>();
+        yourDrawPileCardTypesNames = new ArrayList<>();
+        yourHandPileCardTypesNames = new ArrayList<>();
+        yourDiscardPileCardTypesNames = new ArrayList<>();
+
         cardsInHand = new TextureRegion[6];
     }
 
     public void setDrawPile(){
-        for (String[] card: currentPsykey.deck){
-            drawPileCardNames.add(card[0]);
-            drawPileCardTypes.add(card[1]);
-        }
+        yourDrawPileCardTypesNames.addAll(Arrays.asList(currentPsykey.deck));
     }
 
-    public TextureRegion getTexture(String cardName, String cardType){
+    public TextureRegion getTexture(String cardType, String cardName){
         switch (cardType) {
             case "Id":
                 switch (cardName) {
                     case "Maul":
-                        return idCards[0];
+                        return assets.idCards[0];
                     case "Strike":
-                        return idCards[7];
+                        return assets.idCards[7];
                     case "Battlecry":
-                        return idCards[28];
+                        return assets.idCards[28];
                     case "Slander":
-                        return idCards[29];
+                        return assets.idCards[29];
                     case "Block":
-                        return idCards[31];
+                        return assets.idCards[31];
                 }
 
                 break;
@@ -65,15 +53,15 @@ public class Card {
             case "Ego":
                 switch (cardName) {
                     case "Maul":
-                        return egoCards[0];
+                        return assets.egoCards[0];
                     case "Strike":
-                        return egoCards[7];
+                        return assets.egoCards[7];
                     case "Battlecry":
-                        return egoCards[28];
+                        return assets.egoCards[28];
                     case "Slander":
-                        return egoCards[29];
+                        return assets.egoCards[29];
                     case "Block":
-                        return egoCards[31];
+                        return assets.egoCards[31];
                 }
 
                 break;
@@ -81,15 +69,15 @@ public class Card {
             case "Superego":
                 switch (cardName) {
                     case "Maul":
-                        return superegoCards[0];
+                        return assets.superegoCards[0];
                     case "Strike":
-                        return superegoCards[7];
+                        return assets.superegoCards[7];
                     case "Battlecry":
-                        return superegoCards[28];
+                        return assets.superegoCards[28];
                     case "Slander":
-                        return superegoCards[29];
+                        return assets.superegoCards[29];
                     case "Block":
-                        return superegoCards[31];
+                        return assets.superegoCards[31];
                 }
 
                 break;
@@ -105,21 +93,15 @@ public class Card {
     }
 
     public void drawCard(){
-        int randIndex = (int) (Math.random() * drawPileCardNames.size());
-        System.out.println(randIndex + " " + drawPileCardNames.get(randIndex) + " " + drawPileCardTypes.get(randIndex));
+        int randIndex = (int) (Math.random() * yourDrawPileCardTypesNames.size());
 
-        handPileCardNames.add(drawPileCardNames.get(randIndex));
-        handPileCardTypes.add(drawPileCardTypes.get(randIndex));
-
-        drawPileCardNames.remove(randIndex);
-        drawPileCardTypes.remove(randIndex);
+        yourHandPileCardTypesNames.add(yourDrawPileCardTypesNames.get(randIndex));
+        yourDrawPileCardTypesNames.remove(randIndex);
     }
 
     public void reshuffleDrawPile(){
-        drawPileCardNames.addAll(discardPileCardNames);
-        drawPileCardTypes.addAll(discardPileCardTypes);
+        yourDrawPileCardTypesNames.addAll(yourDiscardPileCardTypesNames);
 
-        discardPileCardNames.clear();
-        discardPileCardTypes.clear();
+        yourDiscardPileCardTypesNames.clear();
     }
 }

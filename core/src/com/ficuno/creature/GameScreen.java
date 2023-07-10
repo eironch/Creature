@@ -27,8 +27,7 @@ public class GameScreen extends CreatureScreen {
 
     @Override
     public void resize(int width, int height) {
-
-        //main.renderer.viewport.update(width, height);
+        main.renderer.viewport.update(width, height);
     }
 
     @Override

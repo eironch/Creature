@@ -12,9 +12,15 @@ public class Main {
     Controller controller;
     Renderer renderer;
     TouchRegion touchRegion;
-    final static int SCREEN_WIDTH = Gdx.graphics.getWidth();
+    Encounter encounter;
+    Assets assets;
+    static int SCREEN_WIDTH = Gdx.graphics.getWidth();
     final static int SCREEN_HEIGHT = Gdx.graphics.getHeight();
+    final static float aspectRatio = (float) Gdx.graphics.getWidth() / (float) Gdx.graphics.getHeight();
+    final static int maxCards = 32;
     List<Integer> handCardSelected = new ArrayList<>();
+    Psykey psykeyRef;
+    Psykey enemyPsykeyRef;
 
     public Main () {loadGame();}
 
@@ -24,13 +30,16 @@ public class Main {
             handCardSelected.add(0);
         }
 
-        Psykey.loadAndCreateAssets();
+        assets = new Assets();
         touchRegion = new TouchRegion(this);
         currentPsykey = new Psykey(this, "Sigmastone");
+        psykeyRef = new Psykey(this, "Sigmastone");
         enemyPsykey = new Psykey(this, "Vainhound");
+        enemyPsykeyRef = new Psykey(this, "Vainhound");
         card = new Card(this);
         renderer = new Renderer(this);
         controller = new Controller(this);
+        encounter = new Encounter(this);
 
         card.setDrawPile();
         card.drawStartCards();

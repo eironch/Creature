@@ -23,15 +23,15 @@ public class Assets {
     TextureRegion helpIcon;
     TextureRegion menuIcon;
     TextureRegion bagIcon;
-    TextureRegion actionsIcon;
+    TextureRegion actionsIconClose;
     TextureRegion drawPileIcon;
     TextureRegion discardPileIcon;
     TextureRegion enemyAttackPlayIcon;
     TextureRegion enemyDefendPlayIcon;
-    TextureRegion enemySpellPlayIcon;
+    TextureRegion enemySpecialPlayIcon;
     TextureRegion playerAttackPlayIcon;
     TextureRegion playerDefendPlayIcon;
-    TextureRegion playerSpellPlayIcon;
+    TextureRegion playerSpecialPlayIcon;
     TextureRegion[] encounterBgTextures = new TextureRegion[4];
     TextureRegion yourUIBar;
     TextureRegion enemyUIBar;
@@ -40,6 +40,9 @@ public class Assets {
     TextureRegion[] superegoCards;
     TextureRegion[] psykeyTextures = new TextureRegion[Creature.maxPsykies];
     TextureRegion[] psykeyTexturesMirror = new TextureRegion[Creature.maxPsykies];
+    Texture actionsIconOpenTexture;
+    TextureRegion actionsIconOpen;
+
     public Assets(){
         idCards = new TextureRegion[Main.maxCards];
         egoCards = new TextureRegion[Main.maxCards];
@@ -67,11 +70,13 @@ public class Assets {
         descBoxTexture = new Texture(Gdx.files.internal("descBoxTexture.png"));
 
         playIconsTexture = new Texture(Gdx.files.internal("playIconsTexture.png"));
+
+        actionsIconOpenTexture = new Texture(Gdx.files.internal("actionsIconTexture.png"));
     }
 
     public void createAssets() {
         int i = 0;
-        for (int y = 0; y < 5; y++){
+        for (int y = 0; y < 6; y++){
             for (int x = 0; x < 7; x++) {
                 idCards[i] = new TextureRegion(splitTexture(idCardsTexture, y, 112, 192)[x]);
 
@@ -102,7 +107,8 @@ public class Assets {
         helpIcon = new TextureRegion(splitTexture(systemIconsTexture, 0, 96,96)[0]);
         menuIcon = new TextureRegion(splitTexture(systemIconsTexture, 0, 96,96)[1]);
         bagIcon = new TextureRegion(splitTexture(systemIconsTexture, 0, 96,96)[2]);
-        actionsIcon = new TextureRegion(splitTexture(systemIconsTexture, 0, 96,96)[3]);
+        actionsIconClose = new TextureRegion(splitTexture(systemIconsTexture, 0, 96,96)[3]);
+        actionsIconOpen = new TextureRegion(actionsIconOpenTexture);
 
         helpSelectedIcon = new TextureRegion(splitTexture(systemIconsTexture, 1, 96,96)[0]);
         menuSelectedIcon = new TextureRegion(splitTexture(systemIconsTexture, 1, 96,96)[1]);
@@ -117,11 +123,11 @@ public class Assets {
 
         enemyAttackPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 0, 80, 64)[0]);
         enemyDefendPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 0, 80, 64)[1]);
-        enemySpellPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 0, 80, 64)[2]);
+        enemySpecialPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 0, 80, 64)[2]);
 
         playerAttackPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 1, 80, 64)[0]);
         playerDefendPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 1, 80, 64)[1]);
-        playerSpellPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 1, 80, 64)[2]);
+        playerSpecialPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 1, 80, 64)[2]);
     }
 
     public static TextureRegion[] splitTexture(Texture texture, int index, int width, int height){

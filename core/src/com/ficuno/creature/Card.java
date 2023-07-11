@@ -1,6 +1,7 @@
 package com.ficuno.creature;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Polygon;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +11,15 @@ public class Card {
     final static String[] attackCards = new String[]{
             "Maul",
             "Strike",
+    };
+
+    final static String[] defendCards = new String[]{
+            "Block"
+    };
+
+    final static String[] specialCards = new String[]{
+            "Slander",
+            "Battlecry"
     };
 
     Main main;
@@ -22,12 +32,13 @@ public class Card {
     List<String[]> enemyDrawPileCardTypesNames;
     List<String[]> enemyHandPileCardTypesNames;
     List<String[]> enemyDiscardPileCardTypesNames;
-
     Assets  assets;
+    TouchRegion touchRegion;
     public Card(Main main){
         this.main = main;
         this.currentPsykey = main.currentPsykey;
         this.enemyPsykey = main.enemyPsykey;
+        this.touchRegion = main.touchRegion;
         this.assets = main.assets;
 
         playerDrawPileCardTypesNames = new ArrayList<>();
@@ -56,6 +67,7 @@ public class Card {
         int randIndex = (int) (Math.random() * playerDrawPileCardTypesNames.size());
 
         playerHandPileCardTypesNames.add(playerDrawPileCardTypesNames.get(randIndex));
+        touchRegion.cardTouchRegionPolys.add(new Polygon(new float[]{0, 0, 112, 0, 112, 192, 0, 192}));
         playerDrawPileCardTypesNames.remove(randIndex);
     }
 
@@ -91,7 +103,7 @@ public class Card {
                     case "Slander":
                         return assets.idCards[29];
                     case "Block":
-                        return assets.idCards[31];
+                        return assets.idCards[35];
                 }
 
                 break;
@@ -107,7 +119,7 @@ public class Card {
                     case "Slander":
                         return assets.egoCards[29];
                     case "Block":
-                        return assets.egoCards[31];
+                        return assets.egoCards[35];
                 }
 
                 break;
@@ -123,7 +135,7 @@ public class Card {
                     case "Slander":
                         return assets.superegoCards[29];
                     case "Block":
-                        return assets.superegoCards[31];
+                        return assets.superegoCards[35];
                 }
 
                 break;

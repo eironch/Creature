@@ -12,10 +12,6 @@ public class TouchRegion {
     public TouchRegion(Main main){
         this.main = main;
 
-        for (int x = 0; x < 6; x++){
-            cardTouchRegionPolys.add(new Polygon(new float[]{0, 0, 112, 0, 112, 192, 0, 192}));
-        }
-
         for (int x = 0; x < 4; x++){
             uiTouchRegionPolys.add(new Polygon(new float[]{0, 0, 96, 0, 96, 96, 0, 96}));
         }

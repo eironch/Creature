@@ -95,11 +95,13 @@ public class Psykey {
     int egoProwessValue;
     int superegoProwessValue;
     int healthPoints;
+
     String oddity;
     String[][] deck;
     TextureRegion texture;
     TextureRegion textureMirror;
     Assets assets;
+    int block;
 
     public Psykey(Main main, String name){
         this.main = main;
@@ -139,6 +141,8 @@ public class Psykey {
                 return "15";
             case "Strike":
                 return "15";
+            case "Block":
+                return "8";
         }
 
         return "0";
@@ -153,11 +157,11 @@ public class Psykey {
                         {"Ego", "Maul", getStats("Maul")},
                         {"Superego", "Maul", getStats("Maul")},
                         {"Id", "Maul", getStats("Maul")},
-                        {"Ego", "Block"},
-                        {"Ego", "Block"},
-                        {"Ego", "Block"},
-                        {"Superego", "Block"},
-                        {"Id", "Block"},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Id", "Block", getStats("Block")},
                         {"Ego", "Slander"},
                         {"Ego", "Battlecry"}
                 };
@@ -171,11 +175,11 @@ public class Psykey {
                         {"Ego", "Strike", getStats("Strike")},
                         {"Ego", "Strike", getStats("Strike")},
                         {"Id", "Strike", getStats("Strike")},
-                        {"Superego", "Block"},
-                        {"Superego", "Block"},
-                        {"Ego", "Block"},
-                        {"Ego", "Block"},
-                        {"Id", "Block"},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Id", "Block", getStats("Block")},
                         {"Superego", "Slander"},
                         {"Ego", "Battlecry"}
                 };

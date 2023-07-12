@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -27,8 +26,6 @@ public class Renderer {
     ShapeRenderer shape;
     Card card;
     Controller controller;
-    Psykey currentPlayerPsykey;
-    Psykey currentEnemyPsykey;
     FreeTypeFontGenerator fontGenerator;
     FreeTypeFontGenerator.FreeTypeFontParameter fontParameter;
     BitmapFont font;
@@ -40,23 +37,34 @@ public class Renderer {
     TouchRegion touchRegion;
     Vector3 touchPos;
     Assets assets;
-    Psykey psykeyRef;
+    Psykey playerPsykeyRef;
+    Psykey playerPsykey;
+    Psykey enemyPsykey;
     Psykey enemyPsykeyRef;
     List<Vector2> handCardTextPos = new ArrayList<>();
     List<Vector2> handCardTextPos2 = new ArrayList<>();
     Encounter encounter;
+    Vector2 playerCardDisplayPos;
+    Vector2 enemyCardDisplayPos;
 
     public Renderer(Main main){
         this.main = main;
-        this.currentPlayerPsykey = main.currentPsykey;
-        this.psykeyRef = main.psykeyRef;
-        this.currentEnemyPsykey = main.enemyPsykey;
+        this.playerPsykey = main.currentPsykey;
+        this.playerPsykeyRef = main.psykeyRef;
+        this.enemyPsykey = main.enemyPsykey;
         this.enemyPsykeyRef = main.enemyPsykeyRef;
         this.controller = main.controller;
         this.encounter = main.encounter;
         this.card = main.card;
         this.assets = main.assets;
         this.touchRegion = main.touchRegion;
+
+        playerCardDisplayPos = new Vector2();
+        enemyCardDisplayPos = new Vector2();
+        playerCardDisplayPos.x = ((Main.SCREEN_WIDTH/3.5f) - assets.cardBackgroundTexture.getWidth()/2f);
+        playerCardDisplayPos.y = 488 - assets.cardBackgroundTexture.getHeight()/2f;
+        enemyCardDisplayPos.x = (((Main.SCREEN_WIDTH) - (Main.SCREEN_WIDTH/3.5f)) - assets.cardBackgroundTexture.getWidth()/2f);
+        enemyCardDisplayPos.y = 488 - assets.cardBackgroundTexture.getHeight()/2f;
 
         touchPos = new Vector3();
         shape = new ShapeRenderer();
@@ -70,6 +78,7 @@ public class Renderer {
         fontParameter.color = Color.WHITE;
         font = fontGenerator.generateFont(fontParameter);
         glyphLayout = new GlyphLayout();
+
         // highlight card
         for (int x = 0; x < 6; x++){
             handCardPos.add(new Vector2(0,0));
@@ -103,6 +112,7 @@ public class Renderer {
         renderBackground();
         renderCards();
         renderUI();
+        renderOtherUI();
         renderPsykies();
         renderText();
         renderOverlay(deltaTime);
@@ -119,6 +129,26 @@ public class Renderer {
     }
 
     public void renderOverlay(float deltaTime){
+        batch.draw(assets.statsDisplayTexture, (Main.SCREEN_WIDTH/2f + 160) - assets.statsDisplayTexture.getWidth()/2f, 500);
+
+        batch.draw(assets.statsCounterIconsMirror[enemyPsykey.idDefenseValue], Main.SCREEN_WIDTH/2f - 96,636);
+        batch.draw(assets.statsCounterIconsMirror[enemyPsykey.egoDefenseValue], Main.SCREEN_WIDTH/2f - 96,584);
+        batch.draw(assets.statsCounterIconsMirror[enemyPsykey.superegoDefenseValue], Main.SCREEN_WIDTH/2f - 96,532);
+
+        batch.draw(assets.statsCounterIcons[enemyPsykey.idProwessValue], Main.SCREEN_WIDTH/2f + 336,636);
+        batch.draw(assets.statsCounterIcons[enemyPsykey.egoProwessValue], Main.SCREEN_WIDTH/2f + 336,584);
+        batch.draw(assets.statsCounterIcons[enemyPsykey.superegoProwessValue], Main.SCREEN_WIDTH/2f + 336,532);
+
+        batch.draw(assets.statsDisplayTexture, (Main.SCREEN_WIDTH/2f - 160) - assets.statsDisplayTexture.getWidth()/2f, 300);
+
+        batch.draw(assets.statsCounterIconsMirror[playerPsykey.idDefenseValue], Main.SCREEN_WIDTH/2f - 416,436);
+        batch.draw(assets.statsCounterIconsMirror[playerPsykey.idDefenseValue], Main.SCREEN_WIDTH/2f - 416,384);
+        batch.draw(assets.statsCounterIconsMirror[playerPsykey.idDefenseValue], Main.SCREEN_WIDTH/2f - 416,332);
+
+        batch.draw(assets.statsCounterIcons[enemyPsykey.idProwessValue], Main.SCREEN_WIDTH/2f + 16,436);
+        batch.draw(assets.statsCounterIcons[enemyPsykey.egoProwessValue], Main.SCREEN_WIDTH/2f + 16,384);
+        batch.draw(assets.statsCounterIcons[enemyPsykey.superegoProwessValue], Main.SCREEN_WIDTH/2f + 16,332);
+
         if (main.showTurnDisplay){
             font.getData().setScale(2);
 
@@ -137,19 +167,7 @@ public class Renderer {
             font.setColor(Color.WHITE);
             font.getData().setScale(1);
 
-            if (encounter.playerCardPlayedPrev != null && encounter.enemyCardPlayedPrev != null){
-                batch.draw(card.getTexture(encounter.playerCardPlayedPrev[0], encounter.playerCardPlayedPrev[1]),
-                        (((Main.SCREEN_WIDTH/3.5f)) - (card.getTexture(encounter.playerCardPlayedPrev[0],
-                                encounter.playerCardPlayedPrev[1]).getRegionWidth()/2f)),
-                        484 - card.getTexture(encounter.playerCardPlayedPrev[0],
-                                encounter.playerCardPlayedPrev[1]).getRegionHeight()/2f);
-
-                batch.draw(card.getTexture(encounter.enemyCardPlayedPrev[0], encounter.enemyCardPlayedPrev[1]),
-                        (((Main.SCREEN_WIDTH) - (Main.SCREEN_WIDTH/3.5f)) - (card.getTexture(encounter.enemyCardPlayedPrev[0],
-                                encounter.enemyCardPlayedPrev[1]).getRegionWidth()/2f)),
-                        484 - card.getTexture(encounter.enemyCardPlayedPrev[0],
-                                encounter.enemyCardPlayedPrev[1]).getRegionHeight()/2f);
-            }
+            drawCardDisplay();
         }
     }
 
@@ -162,67 +180,73 @@ public class Renderer {
         setGlyphLayout(card.playerDiscardPileCardTypesNames.size());
         font.draw(batch, glyphLayout, (100 + assets.drawPileIcon.getRegionWidth()) - w/2, 208 + h);
 
-        setGlyphLayout(currentPlayerPsykey.name);
-        font.draw(batch, glyphLayout, ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) - 237 - (w/2), 440);
+        setGlyphLayout(playerPsykey.name);
+        font.draw(batch, glyphLayout, ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) - 240 - (w/2), 440);
 
-        setGlyphLayout(currentEnemyPsykey.name);
+        setGlyphLayout(enemyPsykey.name);
         font.draw(batch, glyphLayout, ((Main.SCREEN_WIDTH / 2f) + (Main.SCREEN_WIDTH / 8f)) + 232 - (w/2), 556);
 
-        if (currentPlayerPsykey.block > 0){
-            setGlyphLayout(currentPlayerPsykey.healthPoints + "(" + currentPlayerPsykey.block + ")" + "/" + psykeyRef.healthPoints);
+        if (playerPsykey.block > 0){
+            setGlyphLayout(playerPsykey.healthPoints + "/" + playerPsykeyRef.healthPoints);
         } else {
-            setGlyphLayout(currentPlayerPsykey.healthPoints + "/" + psykeyRef.healthPoints);
+            setGlyphLayout(playerPsykey.healthPoints + "/" + playerPsykeyRef.healthPoints);
         }
-        font.draw(batch, glyphLayout, ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) + 200 - (w/2), 361);
+        font.draw(batch, glyphLayout, ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) + 204 - (w/2), 361);
 
-        if (currentEnemyPsykey.block > 0){
-            setGlyphLayout(currentEnemyPsykey.healthPoints + "(" + currentEnemyPsykey.block + ")" + "/" + enemyPsykeyRef.healthPoints);
+        if (enemyPsykey.block > 0){
+            setGlyphLayout(enemyPsykey.healthPoints + "/" + enemyPsykeyRef.healthPoints);
         } else {
-            setGlyphLayout(currentEnemyPsykey.healthPoints + "/" + enemyPsykeyRef.healthPoints);
+            setGlyphLayout(enemyPsykey.healthPoints + "/" + enemyPsykeyRef.healthPoints);
         }
         font.draw(batch, glyphLayout, ((Main.SCREEN_WIDTH / 2f) + (Main.SCREEN_WIDTH / 8f)) - 200 - (w/2), 632);
     }
 
     public void renderPsykies(){
-        batch.draw(currentPlayerPsykey.textureMirror, ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) - 80,312);
-        batch.draw(currentEnemyPsykey.texture, ((Main.SCREEN_WIDTH / 2f) + (Main.SCREEN_WIDTH / 8f)) - 80, 512);
+        batch.draw(playerPsykey.textureMirror, ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) - 80,312);
+        touchRegion.playerPsykeyPoly.setPosition(((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) - 80,312);
+
+        batch.draw(enemyPsykey.texture, ((Main.SCREEN_WIDTH / 2f) + (Main.SCREEN_WIDTH / 8f)) - 80, 512);
+        touchRegion.enemyPsykeyPoly.setPosition(((Main.SCREEN_WIDTH / 2f) + (Main.SCREEN_WIDTH / 8f)) - 80, 512);
     }
 
-    public void renderUI(){
-        batch.draw(assets.spotlightTexture, ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) - 108,272);
-        batch.draw(assets.spotlightTexture, ((Main.SCREEN_WIDTH / 2f) + (Main.SCREEN_WIDTH / 8f)) - 108,472);
-
-        touchRegion.uiTouchRegionPolys.get(0).setPosition(10, Creature.HEIGHT - (assets.helpIcon.getRegionHeight() + 10));
-        touchRegion.uiTouchRegionPolys.get(1).setPosition(Main.SCREEN_WIDTH - (assets.menuIcon.getRegionWidth() + 10),
-                Creature.HEIGHT - (assets.menuIcon.getRegionHeight() + 10));
-        touchRegion.uiTouchRegionPolys.get(2).setPosition(10, 10);
-        touchRegion.uiTouchRegionPolys.get(3).setPosition(Main.SCREEN_WIDTH - (assets.actionsIconClose.getRegionWidth() + 10), 10);
-
-        batch.draw(assets.yourUIBar, ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) - 364,312);
-        batch.draw(assets.enemyUIBar, ((Main.SCREEN_WIDTH / 2f) + (Main.SCREEN_WIDTH / 8f)) - 688,504);
-
-        batch.draw(assets.discardPileIcon, 104, 140);
-        batch.draw(assets.drawPileIcon, Main.SCREEN_WIDTH - (104 + assets.drawPileIcon.getRegionWidth()), 140);
-
-        shape.rect(((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) + 288,344,
-                376 * ((float) currentPlayerPsykey.healthPoints / (float) psykeyRef.healthPoints),16);
-        shape.rect(((Main.SCREEN_WIDTH / 2f) + (Main.SCREEN_WIDTH / 8f)) - 292 - (376 * ((float) currentEnemyPsykey.healthPoints / (float) enemyPsykeyRef.healthPoints)),616,
-                376 * ((float) currentEnemyPsykey.healthPoints / (float) enemyPsykeyRef.healthPoints),16);
-
-        batch.draw(assets.helpIcon, 10, Creature.HEIGHT - (assets.helpIcon.getRegionHeight() + 10));
+    public void renderOtherUI(){
+        batch.draw(assets.helpIcon, 0, Creature.HEIGHT - (assets.helpIcon.getRegionHeight() + 10));
         batch.draw(assets.menuIcon, Main.SCREEN_WIDTH - (assets.menuIcon.getRegionWidth() + 10),
                 Creature.HEIGHT - (assets.menuIcon.getRegionHeight() + 10));
         batch.draw(assets.bagIcon, 10, 10);
         batch.draw(main.actionsMenuState, Main.SCREEN_WIDTH - (main.actionsMenuState.getRegionWidth() + 10), 10);
 
-        if (main.enemyPlayIcon != null){
-            batch.draw(main.enemyPlayIcon,
-                    ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) + 144, 500);
-        }
 
-        if (main.playerPlayIcon != null){
-            batch.draw(main.playerPlayIcon,
-                    ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) + 92, 408);
+        touchRegion.uiTouchRegionPolys.get(0).setPosition(0, Creature.HEIGHT - (assets.helpIcon.getRegionHeight() + 10));
+        touchRegion.uiTouchRegionPolys.get(1).setPosition(Main.SCREEN_WIDTH - (assets.menuIcon.getRegionWidth() + 10),
+                Creature.HEIGHT - (assets.menuIcon.getRegionHeight() + 10));
+        touchRegion.uiTouchRegionPolys.get(2).setPosition(10, 10);
+        touchRegion.uiTouchRegionPolys.get(3).setPosition(Main.SCREEN_WIDTH - (assets.actionsIconClose.getRegionWidth() + 10), 10);
+
+        batch.draw(assets.discardPileIcon, 104, 140);
+        batch.draw(assets.drawPileIcon, Main.SCREEN_WIDTH - (104 + assets.drawPileIcon.getRegionWidth()), 140);
+    }
+
+    public void renderUI(){
+        if (main.showStatsPlayer){
+            shape.rect(((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) + 292,344,
+                    376 * ((float) playerPsykey.healthPoints / (float) playerPsykeyRef.healthPoints),16);
+            batch.draw(assets.playerUIBar, ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) - 368,312);
+
+            if (main.playerPlayIcon != null){
+                batch.draw(main.playerPlayIcon,
+                        ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) + 96, 408);
+            }
+
+        } else if (main.showStatsEnemy){
+            shape.rect(((Main.SCREEN_WIDTH / 2f) + (Main.SCREEN_WIDTH / 8f)) - 292 - (376 * ((float) enemyPsykey.healthPoints / (float) enemyPsykeyRef.healthPoints)),616,
+                    376 * ((float) enemyPsykey.healthPoints / (float) enemyPsykeyRef.healthPoints),16);
+            batch.draw(assets.enemyUIBar, ((Main.SCREEN_WIDTH / 2f) + (Main.SCREEN_WIDTH / 8f)) - 688,504);
+
+            if (main.enemyPlayIcon != null){
+                batch.draw(main.enemyPlayIcon,
+                        ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) + 144, 500);
+            }
         }
     }
 
@@ -327,17 +351,48 @@ public class Renderer {
             }
         }
     }
+
+    public void drawCardDisplay(){
+        if (encounter.playerCardPlayedPrev != null && encounter.enemyCardPlayedPrev != null){
+            batch.draw(assets.cardBackgroundTexture, playerCardDisplayPos.x + 16, playerCardDisplayPos.y - 16);
+
+            batch.draw(assets.getTexture(encounter.playerCardPlayedPrev[0], encounter.playerCardPlayedPrev[1]),
+                    playerCardDisplayPos.x, playerCardDisplayPos.y);
+
+            setGlyphLayout(encounter.playerCardPlayedPrev[2]);
+            font.draw(batch, glyphLayout, playerCardDisplayPos.x + 23 - w/2, playerCardDisplayPos.y + 182);
+
+            setGlyphLayout(encounter.playerCardPlayedPrev[2]);
+            font.draw(batch, glyphLayout, playerCardDisplayPos.x + 91 - w/2, playerCardDisplayPos.y + 27);
+
+            batch.draw(assets.cardBackgroundTexture, enemyCardDisplayPos.x,enemyCardDisplayPos.y - 16);
+
+            batch.draw(assets.getTexture(encounter.enemyCardPlayedPrev[0], encounter.enemyCardPlayedPrev[1]),
+                    enemyCardDisplayPos.x - 16, enemyCardDisplayPos.y);
+
+            setGlyphLayout(encounter.enemyCardPlayedPrev[2]);
+            font.draw(batch, glyphLayout, enemyCardDisplayPos.x + 7 - w/2, enemyCardDisplayPos.y + 182);
+
+            setGlyphLayout(encounter.enemyCardPlayedPrev[2]);
+            font.draw(batch, glyphLayout, enemyCardDisplayPos.x + 75 - w/2, enemyCardDisplayPos.y + 27);
+        }
+    }
     public void renderBackground(){
         batch.draw(assets.encounterBgTextures[0], -668,-216);
+        batch.draw(assets.spotlightTexture, ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) - 108,272);
+        batch.draw(assets.spotlightTexture, ((Main.SCREEN_WIDTH / 2f) + (Main.SCREEN_WIDTH / 8f)) - 108,472);
+
     }
     public void  renderDebugUI(){
-        for (int x = 0; x < touchRegion.cardTouchRegionPolys.size(); x++){
-            shape.polygon(touchRegion.cardTouchRegionPolys.get(x).getTransformedVertices());
-        }
-
-        for (Polygon uiTouchRegion : touchRegion.uiTouchRegionPolys){
-            shape.polygon(uiTouchRegion.getTransformedVertices());
-        }
+//        for (int x = 0; x < touchRegion.cardTouchRegionPolys.size(); x++){
+//            shape.polygon(touchRegion.cardTouchRegionPolys.get(x).getTransformedVertices());
+//        }
+//
+//        for (Polygon uiTouchRegion : touchRegion.uiTouchRegionPolys){
+//            shape.polygon(uiTouchRegion.getTransformedVertices());
+//        }
+        shape.polygon(touchRegion.playerPsykeyPoly.getTransformedVertices());
+        shape.polygon(touchRegion.enemyPsykeyPoly.getTransformedVertices());
 
         if (Gdx.input.justTouched()) {
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(),0);
@@ -351,7 +406,7 @@ public class Renderer {
         return 120 * (Math.round(((card.playerHandPileCardTypesNames.size())/ 2f)) - num);
     }
     public TextureRegion getTexture(int index){
-        return card.getTexture(card.playerHandPileCardTypesNames.get(index)[0], card.playerHandPileCardTypesNames.get(index)[1]);
+        return assets.getTexture(card.playerHandPileCardTypesNames.get(index)[0], card.playerHandPileCardTypesNames.get(index)[1]);
     }
 
     public int findStartPos(int cardCount){

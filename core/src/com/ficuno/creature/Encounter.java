@@ -3,6 +3,7 @@ package com.ficuno.creature;
 import com.badlogic.gdx.math.MathUtils;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class Encounter {
     Main main;
@@ -12,7 +13,7 @@ public class Encounter {
     String[] enemyCardPlayedPrev;
     String[] playerCardPlayedPrev;
     Assets assets;
-    Psykey currentPsykey;
+    Psykey playerPsykey;
     Psykey enemyPsykey;
     Psykey currentPsykeyRef;
     Psykey enemyPsykeyRef;
@@ -21,7 +22,7 @@ public class Encounter {
     public Encounter(Main main){
         this.main = main;
         this.card = main.card;
-        this.currentPsykey = main.currentPsykey;
+        this.playerPsykey = main.currentPsykey;
         this.enemyPsykey = main.enemyPsykey;
         this.currentPsykeyRef = main.currentPsykey;
         this.enemyPsykeyRef = main.enemyPsykey;
@@ -43,28 +44,10 @@ public class Encounter {
         }
 
         if (main.turnState == Main.NEXT_TURN){
-            if (Arrays.asList(Card.attackCards).contains(enemyCardPlayed[1])){
-                currentPsykey.block -= Integer.parseInt(enemyCardPlayed[2]);
+            handleAttack(enemyPsykey, playerCardPlayed[0], playerCardPlayed[1], Integer.parseInt(playerCardPlayed[2]), enemyCardPlayed[0]);
+            handleAttack(playerPsykey, enemyCardPlayed[0], enemyCardPlayed[1], Integer.parseInt(enemyCardPlayed[2]), playerCardPlayed[0]);
 
-                if (currentPsykey.block < 0){
-                    currentPsykey.healthPoints = MathUtils.clamp(
-                            currentPsykey.healthPoints + currentPsykey.block,
-                            0, 1000);
-                }
-
-            }
-
-            if (Arrays.asList(Card.attackCards).contains(playerCardPlayed[1])){
-                enemyPsykey.block -= Integer.parseInt(playerCardPlayed[2]);
-
-                if (enemyPsykey.block < 0){
-                    enemyPsykey.healthPoints = MathUtils.clamp(
-                            enemyPsykey.healthPoints + enemyPsykey.block,
-                            0, 1000);
-                }
-            }
-
-            currentPsykey.block = 0;
+            playerPsykey.block = 0;
             enemyPsykey.block = 0;
             enemyCardPlayedPrev = enemyCardPlayed;
             playerCardPlayedPrev = playerCardPlayed;
@@ -87,6 +70,69 @@ public class Encounter {
             main.overlayTimer = 0;
             main.turnState = main.currentTurn;
         }
+    }
+
+    public void handleAttack(Psykey psykey, String cardType, String cardName, int cardDamage, String otherCardType){
+        if (Arrays.asList(Card.attackCards).contains(cardName)){
+            switch (cardType){
+                case "Id":
+                    psykey.healthPoints = MathUtils.clamp(
+                            psykey.healthPoints - handleDefend(
+                                    psykey, cardType, cardDamage + psykey.idProwessValue, otherCardType),
+                            0, 1000);
+                    break;
+
+                case "Ego":
+                    psykey.healthPoints = MathUtils.clamp(
+                            psykey.healthPoints - handleDefend(
+                                    psykey, cardType, cardDamage + psykey.egoProwessValue, otherCardType),
+                            0, 1000);
+                    break;
+
+                case "Superego":
+                    psykey.healthPoints = MathUtils.clamp(
+                            psykey.healthPoints - handleDefend(
+                                    psykey, cardType,  cardDamage + psykey.superegoProwessValue, otherCardType),
+                            0, 1000);
+                    break;
+            }
+        }
+    }
+
+    public int handleDefend(Psykey psykey, String cardType, int cardDamage, String otherCardType){
+        int damage;
+
+        if (Objects.equals(cardType, otherCardType)){
+            damage = cardDamage - (psykey.block + 2);
+        } else {
+            damage = cardDamage - psykey.block;
+        }
+
+
+        switch (cardType){
+            case "Id":
+                if (psykey.idDefenseValue < damage){
+                    return damage - psykey.idDefenseValue;
+                } else {
+                    return 0;
+                }
+
+            case "Ego":
+                if (psykey.egoDefenseValue < damage){
+                    return damage - psykey.egoDefenseValue;
+                } else {
+                    return 0;
+                }
+
+            case "Superego":
+                if (psykey.superegoDefenseValue < damage){
+                    return damage - psykey.superegoDefenseValue;
+                } else {
+                    return 0;
+                }
+        }
+
+        return 0;
     }
 
     public void startFight(){

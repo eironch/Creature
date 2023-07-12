@@ -58,65 +58,84 @@ public class Controller {
         }
 
         if (Gdx.input.justTouched()){
-            for (int x = 0; x < touchRegion.cardTouchRegionPolys.size(); x++){
-                if (touchRegion.cardTouchRegionPolys.get(x).contains(renderer.touchPos.x, renderer.touchPos.y)){
-                    if (main.handCardSelected.get(x) == 40
-                            && main.turnState == Main.PLAYER_TURN
-                            && main.playerTurn == Main.NOT_DONE){
-                        encounter.playerCardPlayed = card.playerHandPileCardTypesNames.get(x);
+            checkTouchRegions();
+        }
+    }
 
-                        if (Arrays.asList(Card.attackCards).contains(encounter.playerCardPlayed[1])){
-                            main.playerPlayIcon = assets.playerAttackPlayIcon;
-                        } else if (Arrays.asList(Card.defendCards).contains(encounter.playerCardPlayed[1])){
-                            currentPsykey.block += Integer.parseInt(encounter.playerCardPlayed[2]);
-                            main.playerPlayIcon = assets.playerDefendPlayIcon;
-                        } else if (Arrays.asList(Card.specialCards).contains(encounter.playerCardPlayed[1])){
-                            main.playerPlayIcon = assets.playerSpecialPlayIcon;
-                        }
+    public void checkTouchRegions(){
+        for (int x = 0; x < touchRegion.cardTouchRegionPolys.size(); x++){
+            if (touchRegion.cardTouchRegionPolys.get(x).contains(renderer.touchPos.x, renderer.touchPos.y)){
+                if (main.handCardSelected.get(x) == 40
+                        && main.turnState == Main.PLAYER_TURN
+                        && main.playerTurn == Main.NOT_DONE){
+                    encounter.playerCardPlayed = card.playerHandPileCardTypesNames.get(x);
 
-                        card.playerDiscardPileCardTypesNames.add(card.playerHandPileCardTypesNames.get(x));
-
-                        card.playerHandPileCardTypesNames.remove(x);
-                        touchRegion.cardTouchRegionPolys.remove(x);
-
-                        main.playerTurn = Main.DONE;
-
-                        if (main.enemyTurn == Main.DONE){
-                            main.enemyTurn = Main.NOT_DONE;
-                            main.playerTurn = Main.NOT_DONE;
-                            main.turnState = Main.PRE_TURN;
-
-                        } else {
-                            main.turnState = Main.ENEMY_TURN;
-                            main.currentTurn = Main.ENEMY_TURN;
-                            main.showTurnDisplay = true;
-                            main.overlayTimer = 0;
-                        }
-
-                        break;
+                    if (Arrays.asList(Card.attackCards).contains(encounter.playerCardPlayed[1])){
+                        main.playerPlayIcon = assets.playerAttackPlayIcon;
+                    } else if (Arrays.asList(Card.defendCards).contains(encounter.playerCardPlayed[1])){
+                        currentPsykey.block += Integer.parseInt(encounter.playerCardPlayed[2]);
+                        main.playerPlayIcon = assets.playerDefendPlayIcon;
+                    } else if (Arrays.asList(Card.specialCards).contains(encounter.playerCardPlayed[1])){
+                        main.playerPlayIcon = assets.playerSpecialPlayIcon;
                     }
 
-                    for (int i = 0; i < 6; i++){
-                        main.handCardSelected.set(i, 0);
+                    card.playerDiscardPileCardTypesNames.add(card.playerHandPileCardTypesNames.get(x));
+
+                    card.playerHandPileCardTypesNames.remove(x);
+                    touchRegion.cardTouchRegionPolys.remove(x);
+
+                    main.playerTurn = Main.DONE;
+
+                    if (main.enemyTurn == Main.DONE){
+                        main.enemyTurn = Main.NOT_DONE;
+                        main.playerTurn = Main.NOT_DONE;
+                        main.turnState = Main.PRE_TURN;
+
+                    } else {
+                        main.turnState = Main.ENEMY_TURN;
+                        main.currentTurn = Main.ENEMY_TURN;
+                        main.showTurnDisplay = true;
+                        main.overlayTimer = 0;
                     }
 
-                    main.handCardSelected.set(x, 40);
-
-                    break;
+                    return;
                 }
-            }
 
-            for (int x = 0; x < touchRegion.uiTouchRegionPolys.size(); x++){
-                if (touchRegion.uiTouchRegionPolys.get(x).contains(renderer.touchPos.x, renderer.touchPos.y)){
-                    if (x == 3){
-                        if (main.actionsMenuState == assets.actionsIconClose){
-                            main.actionsMenuState = assets.actionsIconOpen;
-                        } else {
-                            main.actionsMenuState = assets.actionsIconClose;
-                        }
+                for (int i = 0; i < 6; i++){
+                    main.handCardSelected.set(i, 0);
+                }
+
+                main.handCardSelected.set(x, 40);
+
+                return;
+            }
+        }
+
+        for (int x = 0; x < touchRegion.uiTouchRegionPolys.size(); x++){
+            if (touchRegion.uiTouchRegionPolys.get(x).contains(renderer.touchPos.x, renderer.touchPos.y)){
+                if (x == 3){
+                    if (main.actionsMenuState == assets.actionsIconClose){
+                        main.actionsMenuState = assets.actionsIconOpen;
+                    } else {
+                        main.actionsMenuState = assets.actionsIconClose;
                     }
                 }
+
+                return;
             }
+        }
+
+        if (main.showStatsEnemy || main.showStatsPlayer){
+            main.showStatsEnemy = false;
+            main.showStatsPlayer = false;
+
+            return;
+        }
+
+        if (touchRegion.enemyPsykeyPoly.contains(renderer.touchPos.x, renderer.touchPos.y)){
+            main.showStatsEnemy = true;
+        } else if (touchRegion.playerPsykeyPoly.contains(renderer.touchPos.x, renderer.touchPos.y)){
+            main.showStatsPlayer = true;
         }
     }
 }

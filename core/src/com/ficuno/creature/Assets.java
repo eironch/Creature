@@ -33,7 +33,7 @@ public class Assets {
     TextureRegion playerDefendPlayIcon;
     TextureRegion playerSpecialPlayIcon;
     TextureRegion[] encounterBgTextures = new TextureRegion[4];
-    TextureRegion yourUIBar;
+    TextureRegion playerUIBar;
     TextureRegion enemyUIBar;
     TextureRegion[] idCards;
     TextureRegion[] egoCards;
@@ -42,11 +42,17 @@ public class Assets {
     TextureRegion[] psykeyTexturesMirror = new TextureRegion[Creature.maxPsykies];
     Texture actionsIconOpenTexture;
     TextureRegion actionsIconOpen;
+    Texture statsDisplayTexture;
+    Texture statsCounterTexture;
+    TextureRegion[] statsCounterIcons;
+    TextureRegion[] statsCounterIconsMirror;
 
     public Assets(){
         idCards = new TextureRegion[Main.maxCards];
         egoCards = new TextureRegion[Main.maxCards];
         superegoCards = new TextureRegion[Main.maxCards];
+        statsCounterIcons = new TextureRegion[10];
+        statsCounterIconsMirror = new TextureRegion[10];
 
         loadAssets();
         createAssets();
@@ -56,22 +62,17 @@ public class Assets {
         idCardsTexture = new Texture(Gdx.files.internal("idCardsTexture.png"));
         egoCardsTexture = new Texture(Gdx.files.internal("egoCardsTexture.png"));
         superegoCardsTexture = new Texture(Gdx.files.internal("superegoCardsTexture.png"));
-
         psykiesTexture = new Texture(Gdx.files.internal("psykiesTexture.png"));
-
         cardBackgroundTexture = new Texture(Gdx.files.internal("cardBackgroundTexture.png"));
         spotlightTexture = new Texture(Gdx.files.internal("spotlightTexture.png"));
-
         encounterBgTexture = new Texture(Gdx.files.internal("encounterBackgroundTexture.png"));
-
         systemIconsTexture = new Texture(Gdx.files.internal("systemIconsTexture.png"));
         uiBarsTexture = new Texture(Gdx.files.internal("uiBarsTexture.png"));
-
         descBoxTexture = new Texture(Gdx.files.internal("descBoxTexture.png"));
-
         playIconsTexture = new Texture(Gdx.files.internal("playIconsTexture.png"));
-
         actionsIconOpenTexture = new Texture(Gdx.files.internal("actionsIconTexture.png"));
+        statsDisplayTexture = new Texture(Gdx.files.internal("statsDisplayTexture.png"));
+        statsCounterTexture = new Texture(Gdx.files.internal("statsCounterTexture.png"));
     }
 
     public void createAssets() {
@@ -118,8 +119,8 @@ public class Assets {
         discardPileIcon = new TextureRegion(splitTexture(systemIconsTexture, 2, 96,96)[0]);
         drawPileIcon = new TextureRegion(splitTexture(systemIconsTexture, 2, 96,96)[1]);
 
-        yourUIBar = new TextureRegion(splitTexture(uiBarsTexture, 0, 1048, 160)[0]);
-        enemyUIBar = new TextureRegion(splitTexture(uiBarsTexture, 1, 1048, 160)[0]);
+        playerUIBar = new TextureRegion(splitTexture(uiBarsTexture, 0, 1056, 160)[0]);
+        enemyUIBar = new TextureRegion(splitTexture(uiBarsTexture, 1, 1056, 160)[0]);
 
         enemyAttackPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 0, 80, 64)[0]);
         enemyDefendPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 0, 80, 64)[1]);
@@ -128,6 +129,11 @@ public class Assets {
         playerAttackPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 1, 80, 64)[0]);
         playerDefendPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 1, 80, 64)[1]);
         playerSpecialPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 1, 80, 64)[2]);
+
+        for (int x = 0; x < 10; x++){
+            statsCounterIcons[x] = new TextureRegion(splitTexture(statsCounterTexture, x, 80, 16)[0]);
+            statsCounterIconsMirror[x] = new TextureRegion(mirrorTexture(statsCounterTexture, x, 80, 16)[0]);
+        }
     }
 
     public static TextureRegion[] splitTexture(Texture texture, int index, int width, int height){
@@ -141,5 +147,59 @@ public class Assets {
         }
 
         return mirror;
+    }
+
+    public TextureRegion getTexture(String cardType, String cardName){
+        switch (cardType) {
+            case "Id":
+                switch (cardName) {
+                    case "Maul":
+                        return idCards[0];
+                    case "Strike":
+                        return idCards[7];
+                    case "Battlecry":
+                        return idCards[28];
+                    case "Slander":
+                        return idCards[29];
+                    case "Block":
+                        return idCards[35];
+                }
+
+                break;
+
+            case "Ego":
+                switch (cardName) {
+                    case "Maul":
+                        return egoCards[0];
+                    case "Strike":
+                        return egoCards[7];
+                    case "Battlecry":
+                        return egoCards[28];
+                    case "Slander":
+                        return egoCards[29];
+                    case "Block":
+                        return egoCards[35];
+                }
+
+                break;
+
+            case "Superego":
+                switch (cardName) {
+                    case "Maul":
+                        return superegoCards[0];
+                    case "Strike":
+                        return superegoCards[7];
+                    case "Battlecry":
+                        return superegoCards[28];
+                    case "Slander":
+                        return superegoCards[29];
+                    case "Block":
+                        return superegoCards[35];
+                }
+
+                break;
+        }
+
+        return null;
     }
 }

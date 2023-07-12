@@ -36,6 +36,8 @@ public class Main {
     TextureRegion playerPlayIcon;
     TextureRegion actionsMenuState;
     boolean showTurnDisplay = false;
+    boolean showStatsEnemy = false;
+    boolean showStatsPlayer = false;
     float overlayTimer;
     public Main () {loadGame();}
 

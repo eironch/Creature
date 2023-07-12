@@ -27,62 +27,62 @@ public class Psykey {
     //
     //
     //
-    final static int[][] defenseTraitValues= new int[][]{
-            {3,3,3},
-            {0,0,0},
-            {0,0,0},
-            {0,0,0},
-            {0,0,0},
-            {0,0,0},
-            {0,0,0},
-            {3,4,5},
-            {0,0,0},
-            {3,3,3},
-            {0,0,0},
-            {0,0,0},
-            {0,0,0},
-            {3,3,3},
-            {0,0,0},
-    };
-    //
-    //
-    //
-    final static int[][] prowessTraitValues= new int[][]{
+    static int[][] prowessTraitValues= new int[][]{
             {0,3,0},
-            {0,0,0},
-            {0,0,0},
-            {0,0,0},
-            {0,0,0},
-            {0,0,0},
-            {0,0,0},
-            {0,0,0},
-            {0,0,0},
-            {3,0,0},
-            {0,0,0},
+            {0,0,4},
+            {5,0,0},
+            {0,8,0},
+            {0,0,5},
+            {3,4,0},
             {0,0,0},
             {0,0,0},
             {0,0,3},
-            {0,0,0},
+            {3,0,0},
+            {2,6,2},
+            {5,2,0},
+            {1,0,4},
+            {0,0,3},
+            {4,3,0},
     };
     //
     //
     //
-    final static int[] healthPointsValues= new int[]{
+    static int[][] defenseTraitValues= new int[][]{
+            {2,3,2},
+            {1,3,2},
+            {5,0,0},
+            {0,2,0},
+            {0,2,3},
+            {1,2,0},
+            {0,0,0},
+            {3,3,4},
+            {2,3,2},
+            {3,2,2},
+            {0,0,0},
+            {3,0,0},
+            {1,0,4},
+            {2,2,3},
+            {1,2,0},
+    };
+    //
+    //
+    //
+    static int[] healthPointsValues= new int[]{
+            45,
+            47,
+            49,
             40,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            55,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
+            56,
+            43,
+            50,
+            58,
+            47,
+            45,
+            42,
+            46,
+            45,
+            45,
+            43,
     };
 
     Main main;
@@ -109,6 +109,32 @@ public class Psykey {
         this.assets = new Assets();
 
         instantiatePsykey(name);
+
+        int idAttack = 0, egoAttack = 0, superegoAttack = 0;
+        int idDefense = 0, egoDefense = 0, superegoDefense = 0;
+
+        for (int i = 0; i < 15; i++){
+            idAttack += prowessTraitValues[i][0];
+            idDefense += defenseTraitValues[i][0];
+
+            egoAttack += prowessTraitValues[i][1];
+            egoDefense += defenseTraitValues[i][1];
+
+            superegoAttack += prowessTraitValues[i][2];
+            superegoDefense += defenseTraitValues[i][2];
+        }
+
+        System.out.println("Prowess");
+        System.out.println("Id: " + idAttack);
+        System.out.println("Ego: " + egoAttack);
+        System.out.println("Superego: " + superegoAttack);
+        System.out.println(idAttack + egoAttack + superegoAttack);
+        System.out.println("Defense");
+        System.out.println("Id: " + idDefense);
+        System.out.println("Ego: " + egoDefense);
+        System.out.println("Superego: " + superegoDefense);
+        System.out.println(idDefense + egoDefense + superegoDefense);
+        System.out.println(idDefense + egoDefense + superegoDefense + idAttack + egoAttack + superegoAttack);
     }
 
     public void instantiatePsykey(String PsykeyName){
@@ -142,7 +168,11 @@ public class Psykey {
             case "Strike":
                 return "15";
             case "Block":
-                return "8";
+                return "5";
+            case "Slander":
+                return "0";
+            case "Battlecry":
+                return "0";
         }
 
         return "0";
@@ -162,8 +192,8 @@ public class Psykey {
                         {"Ego", "Block", getStats("Block")},
                         {"Superego", "Block", getStats("Block")},
                         {"Id", "Block", getStats("Block")},
-                        {"Ego", "Slander"},
-                        {"Ego", "Battlecry"}
+                        {"Ego", "Slander", getStats("Slander")},
+                        {"Ego", "Battlecry", getStats("Battlecry")}
                 };
 
                 break;
@@ -180,8 +210,8 @@ public class Psykey {
                         {"Ego", "Block", getStats("Block")},
                         {"Ego", "Block", getStats("Block")},
                         {"Id", "Block", getStats("Block")},
-                        {"Superego", "Slander"},
-                        {"Ego", "Battlecry"}
+                        {"Superego", "Slander", getStats("Slander")},
+                        {"Ego", "Battlecry", getStats("Battlecry")}
                 };
 
                 break;

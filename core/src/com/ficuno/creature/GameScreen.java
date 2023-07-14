@@ -7,7 +7,8 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 public class GameScreen extends CreatureScreen {
     Main main;
-    float currentTime;
+    static boolean lost = false;
+    static boolean retry = false;
 
     public GameScreen(Game game) {super(game);}
 
@@ -20,9 +21,15 @@ public class GameScreen extends CreatureScreen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0f, 0f, 0f, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        currentTime = TimeUtils.nanosToMillis(TimeUtils.nanoTime());
 
-        main.update(delta);
+        if (!retry){
+            main.update(delta);
+        } else {
+            retry = false;
+
+            game.setScreen(new MainMenuScreen(game));
+            dispose();
+        }
     }
 
     @Override

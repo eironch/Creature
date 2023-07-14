@@ -1,8 +1,12 @@
 package com.ficuno.creature;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class Assets {
     Texture idCardsTexture;
@@ -19,7 +23,7 @@ public class Assets {
     Texture descBoxTexture;
     Texture cardBackgroundTexture;
     Texture spotlightTexture;
-    Texture playIconsTexture;
+    Texture encounterIconsTexture;
     TextureRegion helpIcon;
     TextureRegion menuIcon;
     TextureRegion bagIcon;
@@ -32,7 +36,9 @@ public class Assets {
     TextureRegion playerAttackPlayIcon;
     TextureRegion playerDefendPlayIcon;
     TextureRegion playerSpecialPlayIcon;
-    TextureRegion[] encounterBgTextures = new TextureRegion[4];
+    TextureRegion spotlight;
+    TextureRegion notSpotlight;
+    TextureRegion[] backgrounds = new TextureRegion[4];
     TextureRegion playerUIBar;
     TextureRegion enemyUIBar;
     TextureRegion[] idCards;
@@ -46,13 +52,38 @@ public class Assets {
     Texture statsCounterTexture;
     TextureRegion[] statsCounterIcons;
     TextureRegion[] statsCounterIconsMirror;
-
+    float w;
+    float h;
+    FreeTypeFontGenerator fontGenerator;
+    FreeTypeFontGenerator.FreeTypeFontParameter fontParameter;
+    BitmapFont font;
+    GlyphLayout glyphLayout;
+    Texture chooseButtonTexture;
+    TextureRegion chooseButtonIcon;
+    TextureRegion chooseButtonBackground;
+    TextureRegion playerDefDownIcon;
+    TextureRegion playerDefUpIcon;
+    TextureRegion playerProwDownIcon;
+    TextureRegion playerProwUpIcon;
+    TextureRegion enemyDefDownIcon;
+    TextureRegion enemyDefUpIcon;
+    TextureRegion enemyProwDownIcon;
+    TextureRegion enemyProwUpIcon;
     public Assets(){
         idCards = new TextureRegion[Main.maxCards];
         egoCards = new TextureRegion[Main.maxCards];
         superegoCards = new TextureRegion[Main.maxCards];
         statsCounterIcons = new TextureRegion[10];
         statsCounterIconsMirror = new TextureRegion[10];
+
+        fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
+        fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        fontParameter.size = 25;
+        fontParameter.borderWidth = 2;
+        fontParameter.borderColor = Color.BLACK;
+        fontParameter.color = Color.WHITE;
+        font = fontGenerator.generateFont(fontParameter);
+        glyphLayout = new GlyphLayout();
 
         loadAssets();
         createAssets();
@@ -69,10 +100,11 @@ public class Assets {
         systemIconsTexture = new Texture(Gdx.files.internal("systemIconsTexture.png"));
         uiBarsTexture = new Texture(Gdx.files.internal("uiBarsTexture.png"));
         descBoxTexture = new Texture(Gdx.files.internal("descBoxTexture.png"));
-        playIconsTexture = new Texture(Gdx.files.internal("playIconsTexture.png"));
+        encounterIconsTexture = new Texture(Gdx.files.internal("encounterIconsTexture.png"));
         actionsIconOpenTexture = new Texture(Gdx.files.internal("actionsIconTexture.png"));
         statsDisplayTexture = new Texture(Gdx.files.internal("statsDisplayTexture.png"));
         statsCounterTexture = new Texture(Gdx.files.internal("statsCounterTexture.png"));
+        chooseButtonTexture = new Texture(Gdx.files.internal("chooseButtonTexture.png"));
     }
 
     public void createAssets() {
@@ -102,7 +134,12 @@ public class Assets {
         }
 
         for (int y = 0; y < 4; y++){
-            encounterBgTextures[y] = new TextureRegion(splitTexture(encounterBgTexture, y, 3480, 1252)[0]);
+            backgrounds[y] = new TextureRegion(splitTexture(encounterBgTexture, y, 3480, 1252)[0]);
+        }
+
+        for (int x = 0; x < 10; x++){
+            statsCounterIcons[x] = new TextureRegion(splitTexture(statsCounterTexture, x, 80, 16)[0]);
+            statsCounterIconsMirror[x] = new TextureRegion(mirrorTexture(statsCounterTexture, x, 80, 16)[0]);
         }
 
         helpIcon = new TextureRegion(splitTexture(systemIconsTexture, 0, 96,96)[0]);
@@ -122,18 +159,29 @@ public class Assets {
         playerUIBar = new TextureRegion(splitTexture(uiBarsTexture, 0, 1056, 160)[0]);
         enemyUIBar = new TextureRegion(splitTexture(uiBarsTexture, 1, 1056, 160)[0]);
 
-        enemyAttackPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 0, 80, 64)[0]);
-        enemyDefendPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 0, 80, 64)[1]);
-        enemySpecialPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 0, 80, 64)[2]);
+        enemyAttackPlayIcon = new TextureRegion(splitTexture(encounterIconsTexture, 0, 80, 64)[0]);
+        enemyDefendPlayIcon = new TextureRegion(splitTexture(encounterIconsTexture, 0, 80, 64)[1]);
+        enemySpecialPlayIcon = new TextureRegion(splitTexture(encounterIconsTexture, 0, 80, 64)[2]);
 
-        playerAttackPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 1, 80, 64)[0]);
-        playerDefendPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 1, 80, 64)[1]);
-        playerSpecialPlayIcon = new TextureRegion(splitTexture(playIconsTexture, 1, 80, 64)[2]);
+        playerAttackPlayIcon = new TextureRegion(splitTexture(encounterIconsTexture, 1, 80, 64)[0]);
+        playerDefendPlayIcon = new TextureRegion(splitTexture(encounterIconsTexture, 1, 80, 64)[1]);
+        playerSpecialPlayIcon = new TextureRegion(splitTexture(encounterIconsTexture, 1, 80, 64)[2]);
 
-        for (int x = 0; x < 10; x++){
-            statsCounterIcons[x] = new TextureRegion(splitTexture(statsCounterTexture, x, 80, 16)[0]);
-            statsCounterIconsMirror[x] = new TextureRegion(mirrorTexture(statsCounterTexture, x, 80, 16)[0]);
-        }
+        chooseButtonIcon = new TextureRegion(splitTexture(chooseButtonTexture, 0, 320,80)[0]);
+        chooseButtonBackground = new TextureRegion(splitTexture(chooseButtonTexture, 1, 320,80)[0]);
+
+        spotlight = new TextureRegion(splitTexture(spotlightTexture, 0, 216,80)[0]);
+        notSpotlight = new TextureRegion(splitTexture(spotlightTexture, 1, 216,80)[0]);
+
+        playerDefDownIcon = new TextureRegion(splitTexture(encounterIconsTexture, 2, 80, 64)[0]);
+        playerDefUpIcon = new TextureRegion(splitTexture(encounterIconsTexture, 2, 80, 64)[1]);
+        playerProwDownIcon = new TextureRegion(splitTexture(encounterIconsTexture, 3, 80, 64)[0]);
+        playerProwUpIcon = new TextureRegion(splitTexture(encounterIconsTexture, 3, 80, 64)[1]);
+
+        enemyDefDownIcon = new TextureRegion(mirrorTexture(encounterIconsTexture, 2, 80, 64)[0]);
+        enemyDefUpIcon = new TextureRegion(mirrorTexture(encounterIconsTexture, 2, 80, 64)[1]);
+        enemyProwDownIcon = new TextureRegion(mirrorTexture(encounterIconsTexture, 3, 80, 64)[0]);
+        enemyProwUpIcon = new TextureRegion(mirrorTexture(encounterIconsTexture, 3, 80, 64)[1]);
     }
 
     public static TextureRegion[] splitTexture(Texture texture, int index, int width, int height){
@@ -149,6 +197,18 @@ public class Assets {
         return mirror;
     }
 
+    public void setGlyphLayout(String text){
+        glyphLayout.setText(font, text);
+        w = glyphLayout.width;
+        h = glyphLayout.height;
+    }
+
+    public void setGlyphLayout(int text){
+        glyphLayout.setText(font, Integer.toString(text));
+        w = glyphLayout.width;
+        h = glyphLayout.height;
+    }
+
     public TextureRegion getTexture(String cardType, String cardName){
         switch (cardType) {
             case "Id":
@@ -157,6 +217,8 @@ public class Assets {
                         return idCards[0];
                     case "Strike":
                         return idCards[7];
+                    case "Arcane Blast":
+                        return idCards[21];
                     case "Battlecry":
                         return idCards[28];
                     case "Slander":
@@ -173,6 +235,8 @@ public class Assets {
                         return egoCards[0];
                     case "Strike":
                         return egoCards[7];
+                    case "Arcane Blast":
+                        return egoCards[21];
                     case "Battlecry":
                         return egoCards[28];
                     case "Slander":
@@ -189,6 +253,8 @@ public class Assets {
                         return superegoCards[0];
                     case "Strike":
                         return superegoCards[7];
+                    case "Arcane Blast":
+                        return superegoCards[21];
                     case "Battlecry":
                         return superegoCards[28];
                     case "Slander":

@@ -84,10 +84,8 @@ public class Psykey {
             45,
             43,
     };
-
-    Main main;
-    Card card;
     String name;
+    String statusEffect;
     int idDefenseValue;
     int egoDefenseValue;
     int superegoDefenseValue;
@@ -103,38 +101,10 @@ public class Psykey {
     Assets assets;
     int block;
 
-    public Psykey(Main main, String name){
-        this.main = main;
-        this.card = main.card;
+    public Psykey(String name){
         this.assets = new Assets();
 
         instantiatePsykey(name);
-
-        int idAttack = 0, egoAttack = 0, superegoAttack = 0;
-        int idDefense = 0, egoDefense = 0, superegoDefense = 0;
-
-        for (int i = 0; i < 15; i++){
-            idAttack += prowessTraitValues[i][0];
-            idDefense += defenseTraitValues[i][0];
-
-            egoAttack += prowessTraitValues[i][1];
-            egoDefense += defenseTraitValues[i][1];
-
-            superegoAttack += prowessTraitValues[i][2];
-            superegoDefense += defenseTraitValues[i][2];
-        }
-
-        System.out.println("Prowess");
-        System.out.println("Id: " + idAttack);
-        System.out.println("Ego: " + egoAttack);
-        System.out.println("Superego: " + superegoAttack);
-        System.out.println(idAttack + egoAttack + superegoAttack);
-        System.out.println("Defense");
-        System.out.println("Id: " + idDefense);
-        System.out.println("Ego: " + egoDefense);
-        System.out.println("Superego: " + superegoDefense);
-        System.out.println(idDefense + egoDefense + superegoDefense);
-        System.out.println(idDefense + egoDefense + superegoDefense + idAttack + egoAttack + superegoAttack);
     }
 
     public void instantiatePsykey(String PsykeyName){
@@ -167,6 +137,8 @@ public class Psykey {
                 return "15";
             case "Strike":
                 return "15";
+            case "Arcane Blast":
+                return "15";
             case "Block":
                 return "5";
             case "Slander":
@@ -185,37 +157,270 @@ public class Psykey {
                         {"Ego", "Maul", getStats("Maul")},
                         {"Ego", "Maul", getStats("Maul")},
                         {"Ego", "Maul", getStats("Maul")},
-                        {"Superego", "Maul", getStats("Maul")},
-                        {"Id", "Maul", getStats("Maul")},
-                        {"Ego", "Block", getStats("Block")},
-                        {"Ego", "Block", getStats("Block")},
+                        {"Ego", "Maul", getStats("Maul")},
+                        {"Ego", "Maul", getStats("Maul")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Id", "Block", getStats("Block")},
                         {"Ego", "Block", getStats("Block")},
                         {"Superego", "Block", getStats("Block")},
-                        {"Id", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
                         {"Ego", "Slander", getStats("Slander")},
                         {"Ego", "Battlecry", getStats("Battlecry")}
                 };
 
                 break;
 
-            case 7:
+            case 1:
                 deck = new String[][]{
-                        {"Superego", "Strike", getStats("Strike")},
-                        {"Superego", "Strike", getStats("Strike")},
-                        {"Ego", "Strike", getStats("Strike")},
-                        {"Ego", "Strike", getStats("Strike")},
                         {"Id", "Strike", getStats("Strike")},
-                        {"Superego", "Block", getStats("Block")},
-                        {"Superego", "Block", getStats("Block")},
-                        {"Ego", "Block", getStats("Block")},
-                        {"Ego", "Block", getStats("Block")},
+                        {"Ego", "Strike", getStats("Strike")},
+                        {"Superego", "Strike", getStats("Strike")},
+                        {"Superego", "Strike", getStats("Strike")},
+                        {"Superego", "Strike", getStats("Strike")},
                         {"Id", "Block", getStats("Block")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
                         {"Superego", "Slander", getStats("Slander")},
+                        {"Superego", "Battlecry", getStats("Battlecry")}
+                };
+
+                break;
+
+            case 2:
+                deck = new String[][]{
+                        {"Id", "Maul", getStats("Maul")},
+                        {"Id", "Maul", getStats("Maul")},
+                        {"Id", "Maul", getStats("Maul")},
+                        {"Id", "Maul", getStats("Maul")},
+                        {"Id", "Maul", getStats("Maul")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Id", "Slander", getStats("Slander")},
+                        {"Id", "Battlecry", getStats("Battlecry")}
+                };
+
+                break;
+
+            case 3:
+                deck = new String[][]{
+                        {"Ego", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Ego", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Ego", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Ego", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Ego", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Ego", "Slander", getStats("Slander")},
                         {"Ego", "Battlecry", getStats("Battlecry")}
                 };
 
                 break;
 
+            case 4:
+                deck = new String[][]{
+                        {"Superego", "Strike", getStats("Strike")},
+                        {"Superego", "Strike", getStats("Strike")},
+                        {"Superego", "Strike", getStats("Strike")},
+                        {"Superego", "Strike", getStats("Strike")},
+                        {"Superego", "Strike", getStats("Strike")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Superego", "Slander", getStats("Slander")},
+                        {"Superego", "Battlecry", getStats("Battlecry")}
+                };
+
+                break;
+
+            case 5:
+                deck = new String[][]{
+                        {"Id", "Strike", getStats("Strike")},
+                        {"Id", "Strike", getStats("Strike")},
+                        {"Ego", "Strike", getStats("Strike")},
+                        {"Ego", "Strike", getStats("Strike")},
+                        {"Ego", "Strike", getStats("Strike")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Ego", "Slander", getStats("Slander")},
+                        {"Ego", "Battlecry", getStats("Battlecry")}
+                };
+
+                break;
+
+            case 6:
+                deck = new String[][]{
+                        {"Id", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Id", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Ego", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Ego", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Superego", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Superego", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")}
+                };
+
+                break;
+
+            case 7:
+                deck = new String[][]{
+                        {"Id", "Strike", getStats("Strike")},
+                        {"Id", "Strike", getStats("Strike")},
+                        {"Ego", "Strike", getStats("Strike")},
+                        {"Ego", "Strike", getStats("Strike")},
+                        {"Superego", "Strike", getStats("Strike")},
+                        {"Superego", "Strike", getStats("Strike")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Superego", "Battlecry", getStats("Battlecry")}
+                };
+
+                break;
+
+            case 8:
+                deck = new String[][]{
+                        {"Id", "Strike", getStats("Strike")},
+                        {"Ego", "Strike", getStats("Strike")},
+                        {"Superego", "Strike", getStats("Strike")},
+                        {"Superego", "Strike", getStats("Strike")},
+                        {"Superego", "Strike", getStats("Strike")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Superego", "Slander", getStats("Slander")},
+                        {"Superego", "Battlecry", getStats("Battlecry")}
+                };
+
+                break;
+
+            case 9:
+                deck = new String[][]{
+                        {"Id", "Strike", getStats("Strike")},
+                        {"Id", "Strike", getStats("Strike")},
+                        {"Id", "Strike", getStats("Strike")},
+                        {"Ego", "Strike", getStats("Strike")},
+                        {"Superego", "Strike", getStats("Strike")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Id", "Slander", getStats("Slander")},
+                        {"Id", "Battlecry", getStats("Battlecry")}
+                };
+
+                break;
+
+            case 10:
+                deck = new String[][]{
+                        {"Id", "Strike", getStats("Strike")},
+                        {"Ego", "Strike", getStats("Strike")},
+                        {"Ego", "Strike", getStats("Strike")},
+                        {"Ego", "Strike", getStats("Strike")},
+                        {"Superego", "Strike", getStats("Strike")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Ego", "Slander", getStats("Slander")}
+                };
+
+                break;
+
+            case 11:
+                deck = new String[][]{
+                        {"Id", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Id", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Id", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Id", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Ego", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Id", "Slander", getStats("Slander")},
+                        {"Id", "Battlecry", getStats("Battlecry")}
+                };
+
+                break;
+
+            case 12:
+                deck = new String[][]{
+                        {"Id", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Superego", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Superego", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Superego", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Superego", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Superego", "Slander", getStats("Slander")},
+                        {"Superego", "Battlecry", getStats("Battlecry")}
+                };
+
+                break;
+
+            case 13:
+                deck = new String[][]{
+                        {"Id", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Ego", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Superego", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Superego", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Superego", "Arcane Blast", getStats("Arcane Blast")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Superego", "Slander", getStats("Slander")},
+                        {"Superego", "Battlecry", getStats("Battlecry")}
+                };
+
+                break;
+
+            case 14:
+                deck = new String[][]{
+                        {"Id", "Maul", getStats("Maul")},
+                        {"Id", "Maul", getStats("Maul")},
+                        {"Id", "Maul", getStats("Maul")},
+                        {"Ego", "Maul", getStats("Maul")},
+                        {"Ego", "Maul", getStats("Maul")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Id", "Block", getStats("Block")},
+                        {"Ego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Superego", "Block", getStats("Block")},
+                        {"Id", "Slander", getStats("Slander")},
+                        {"Id", "Battlecry", getStats("Battlecry")}
+                };
+
+                break;
         }
     }
 }

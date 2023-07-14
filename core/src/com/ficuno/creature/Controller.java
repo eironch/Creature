@@ -1,9 +1,9 @@
 package com.ficuno.creature;
 
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.math.Polygon;
 
 import java.util.Arrays;
 
@@ -12,89 +12,79 @@ public class Controller {
     Card card;
     TouchRegion touchRegion;
     Renderer renderer;
-    Psykey enemyPsykey;
-    Psykey currentPsykey;
+    Psykey[] enemyPsykey;
+    Psykey[] playerPsykey;
     Encounter encounter;
     Assets assets;
+    Starter starter;
     public Controller(Main main){
         this.main = main;
         this.card = main.card;
         this.assets = main.assets;
         this.renderer = main.renderer;
         this.touchRegion = main.touchRegion;
-        this.currentPsykey = main.currentPsykey;
+        this.playerPsykey = main.playerPsykey;
         this.encounter = main.encounter;
         this.enemyPsykey = main.enemyPsykey;
+        this.starter = main.starter;
     }
 
     public void processKeys(float deltaTime){
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
-                && card.playerDrawPileCardTypesNames.size() > 0
-                && card.playerHandPileCardTypesNames.size() < 6){
-            card.drawCard();
+        if (GameScreen.lost){
+            if (Gdx.input.justTouched()){
+                if (touchRegion.retryButtonPoly.contains(renderer.touchPos.x, renderer.touchPos.y)){
+                    GameScreen.retry = true;
+                }
+            }
 
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
-                && card.playerHandPileCardTypesNames.size() < 6){
-            card.reshuffleDrawPile();
-            card.drawCard();
-
-            touchRegion.cardTouchRegionPolys.add(new Polygon(new float[]{0, 0, 112, 0, 112, 192, 0, 192}));
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.Q)){
-            main.currentPsykey.healthPoints -= 2;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.E)){
-            main.currentPsykey.healthPoints += 2;
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.I)){
-            main.enemyPsykey.healthPoints -= 2;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.P)){
-            main.enemyPsykey.healthPoints += 2;
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.G)){
-            main.turnState = Main.NEXT_TURN;
+            return;
         }
 
         if (Gdx.input.justTouched()){
-            checkTouchRegions();
+            if (main.chosePsykey){
+                checkTouchRegions();
+            } else {
+                checkStarterTouchRegion();
+            }
         }
     }
 
     public void checkTouchRegions(){
-        for (int x = 0; x < touchRegion.cardTouchRegionPolys.size(); x++){
-            if (touchRegion.cardTouchRegionPolys.get(x).contains(renderer.touchPos.x, renderer.touchPos.y)){
+        for (int x = 0; x < touchRegion.cardTouchRegionPolys__.get(main.playerPsykeySelected).size(); x++){
+            if (touchRegion.cardTouchRegionPolys__.get(main.playerPsykeySelected).get(x).contains(renderer.touchPos.x, renderer.touchPos.y)){
                 if (main.handCardSelected.get(x) == 40
                         && main.turnState == Main.PLAYER_TURN
                         && main.playerTurn == Main.NOT_DONE){
-                    encounter.playerCardPlayed = card.playerHandPileCardTypesNames.get(x);
+                    encounter.playerCardPlayed = card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(x);
 
                     if (Arrays.asList(Card.attackCards).contains(encounter.playerCardPlayed[1])){
-                        main.playerPlayIcon = assets.playerAttackPlayIcon;
+                        main.playerPlayIcon[main.playerPsykeySelected] = assets.playerAttackPlayIcon;
                     } else if (Arrays.asList(Card.defendCards).contains(encounter.playerCardPlayed[1])){
-                        currentPsykey.block += Integer.parseInt(encounter.playerCardPlayed[2]);
-                        main.playerPlayIcon = assets.playerDefendPlayIcon;
+                        playerPsykey[main.playerPsykeySelected].block += Integer.parseInt(encounter.playerCardPlayed[2]);
+                        main.playerPlayIcon[main.playerPsykeySelected] = assets.playerDefendPlayIcon;
                     } else if (Arrays.asList(Card.specialCards).contains(encounter.playerCardPlayed[1])){
-                        main.playerPlayIcon = assets.playerSpecialPlayIcon;
+                        main.playerPlayIcon[main.playerPsykeySelected] = assets.playerSpecialPlayIcon;
                     }
 
-                    card.playerDiscardPileCardTypesNames.add(card.playerHandPileCardTypesNames.get(x));
+                    card.playerDiscardPileCardTypesNames__.get(main.playerPsykeySelected).add(card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(x));
 
-                    card.playerHandPileCardTypesNames.remove(x);
-                    touchRegion.cardTouchRegionPolys.remove(x);
+                    card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).remove(x);
+                    touchRegion.cardTouchRegionPolys__.get(main.playerPsykeySelected).remove(x);
 
                     main.playerTurn = Main.DONE;
 
                     if (main.enemyTurn == Main.DONE){
                         main.enemyTurn = Main.NOT_DONE;
                         main.playerTurn = Main.NOT_DONE;
-                        main.turnState = Main.PRE_TURN;
+                        main.turnState = Main.NEXT_TURN;
 
                     } else {
                         main.turnState = Main.ENEMY_TURN;
                         main.currentTurn = Main.ENEMY_TURN;
+
+                        main.showOverlay = true;
                         main.showTurnDisplay = true;
+
                         main.overlayTimer = 0;
                     }
 
@@ -125,17 +115,48 @@ public class Controller {
             }
         }
 
-        if (main.showStatsEnemy || main.showStatsPlayer){
-            main.showStatsEnemy = false;
-            main.showStatsPlayer = false;
 
-            return;
-        }
 
         if (touchRegion.enemyPsykeyPoly.contains(renderer.touchPos.x, renderer.touchPos.y)){
-            main.showStatsEnemy = true;
+            if (main.showStatsEnemy){
+                main.showStatsEnemy = false;
+            } else {
+                main.showStatsEnemy = true;
+            }
+
         } else if (touchRegion.playerPsykeyPoly.contains(renderer.touchPos.x, renderer.touchPos.y)){
-            main.showStatsPlayer = true;
+            if (main.showStatsPlayer){
+                main.showStatsPlayer = false;
+            } else {
+                main.showStatsPlayer = true;
+            }
+        }
+    }
+
+    public void checkStarterTouchRegion(){
+        if (touchRegion.chooseButtonPoly.contains(renderer.touchPos.x, renderer.touchPos.y)){
+            main.playerPsykey[0] = new Psykey(starter.starterPsykies[starter.chosenPsykey].name);
+            main.playerPsykeyRef[0] = new Psykey(main.playerPsykey[0].name);
+            main.chosePsykey = true;
+            touchRegion.chooseButtonPoly = null;
+
+            encounter.startFight();
+        }
+
+        if (touchRegion.starterPsykeyPolys[0].contains(renderer.touchPos.x, renderer.touchPos.y)){
+            starter.chosenPsykey = 0;
+            main.starterSpotlightPos.set(Main.SCREEN_WIDTH/4f - starter.starterPsykies[0].texture.getRegionWidth()/2f,
+                    (Main.SCREEN_HEIGHT - Main.SCREEN_HEIGHT/2.5f) - starter.starterPsykies[0].texture.getRegionHeight()/2f);
+
+        } else if (touchRegion.starterPsykeyPolys[1].contains(renderer.touchPos.x, renderer.touchPos.y)) {
+            starter.chosenPsykey = 1;
+            main.starterSpotlightPos.set(Main.SCREEN_WIDTH/2f - starter.starterPsykies[1].texture.getRegionWidth()/2f,
+                    (Main.SCREEN_HEIGHT - Main.SCREEN_HEIGHT/2.5f) - starter.starterPsykies[1].texture.getRegionHeight()/2f);
+
+        }  else if (touchRegion.starterPsykeyPolys[2].contains(renderer.touchPos.x, renderer.touchPos.y)){
+            starter.chosenPsykey = 2;
+            main.starterSpotlightPos.set(((Main.SCREEN_WIDTH/4f) * 3) - starter.starterPsykies[2].texture.getRegionWidth()/2f,
+                    (Main.SCREEN_HEIGHT - Main.SCREEN_HEIGHT/2.5f) - starter.starterPsykies[2].texture.getRegionHeight()/2f);
         }
     }
 }

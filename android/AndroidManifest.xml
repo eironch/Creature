@@ -7,13 +7,13 @@
     <application
         android:allowBackup="true"
         android:fullBackupContent="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:isGame="true"
         android:appCategory="game"
         android:label="@string/app_name"
         tools:ignore="UnusedAttribute">
         <activity
-            android:name="com.ficuno.creature.AndroidLauncher"
+            android:name="com.ficuno.PSYKIES.AndroidLauncher"
             android:label="@string/app_name" 
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"

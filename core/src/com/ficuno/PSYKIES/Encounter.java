@@ -1,4 +1,4 @@
-package com.ficuno.creature;
+package com.ficuno.PSYKIES;
 
 import com.badlogic.gdx.math.MathUtils;
 
@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class Encounter {
     Main main;
-    Card card;
+    Cards cards;
     String[] enemyCardPlayed;
     String[] playerCardPlayed;
     String[] enemyCardPlayedPrev;
@@ -15,13 +15,17 @@ public class Encounter {
     Assets assets;
     Psykey[] playerPsykey;
     Psykey[] enemyPsykey;
+    Psykey[] playerPsykeyRef;
+    Psykey[] enemyPsykeyRef;
     Renderer renderer;
 
     public Encounter(Main main){
         this.main = main;
-        this.card = main.card;
+        this.cards = main.cards;
         this.playerPsykey = main.playerPsykey;
         this.enemyPsykey = main.enemyPsykey;
+        this.playerPsykeyRef = main.playerPsykeyRef;
+        this.enemyPsykeyRef = main.enemyPsykeyRef;
         this.renderer = main.renderer;
         this.assets = main.assets;
     }
@@ -40,15 +44,17 @@ public class Encounter {
             enemyCardPlayedPrev = enemyCardPlayed;
             playerCardPlayedPrev = playerCardPlayed;
 
-            if (card.playerDrawPileCardTypesNames__.get(main.playerPsykeySelected).size() == 0){
-                card.reshuffleDrawPile(main.playerPsykeySelected);
-            }
-            card.drawCard(main.playerPsykeySelected);
+            playEnemySpecialCard();
 
-            if (card.enemyDrawPileCardTypesNames__.get(main.enemyPsykeySelected).size() == 0){
-                card.enemyReshuffleDrawPile(main.enemyPsykeySelected);
+            if (cards.playerDrawPileCardTypesNames.get(main.playerPsykeySelected).size() == 0){
+                cards.reshuffleDrawPile(main.playerPsykeySelected);
             }
-            card.enemyDrawCard(main.enemyPsykeySelected);
+            cards.drawCard(main.playerPsykeySelected);
+
+            if (cards.enemyDrawPileCardTypesNames.get(main.enemyPsykeySelected).size() == 0){
+                cards.enemyReshuffleDrawPile(main.enemyPsykeySelected);
+            }
+            cards.enemyDrawCard(main.enemyPsykeySelected);
 
             main.showOverlay = true;
             main.showTurnDisplay = true;
@@ -59,8 +65,24 @@ public class Encounter {
         }
     }
 
+    public void startFight(){
+        cards.clearCardPiles();
+
+        if (playerPsykey[Main.FIRST] != null) {
+            cards.setDrawPile(Main.FIRST);
+        }
+
+        if (playerPsykey[Main.SECOND] != null) {
+            cards.setDrawPile(Main.SECOND);
+        }
+
+        cards.setEnemyDrawPile(Main.FIRST);
+        cards.setHandCards();
+        enemyTurn();
+    }
+
     public void handleAttack(Psykey psykey, String cardType, String cardName, int cardDamage, String otherCardType){
-        if (Arrays.asList(Card.attackCards).contains(cardName)){
+        if (Arrays.asList(Cards.attackCards).contains(cardName)){
             switch (cardType){
                 case "Id":
                     psykey.healthPoints = MathUtils.clamp(
@@ -122,21 +144,9 @@ public class Encounter {
         return 0;
     }
 
-    public void startFight(){
-        if (playerPsykey[Main.FIRST] != null) {
-            card.setDrawPile(Main.FIRST);
-        }
-
-        if (playerPsykey[Main.SECOND] != null) {
-            card.setDrawPile(Main.SECOND);
-        }
-        card.setEnemyDrawPile(Main.FIRST);
-        card.setHandCards();
-        enemyTurn();
-    }
 
     public void enemyTurn(){
-        if (card.enemyHandPileCardTypesNames__.get(main.enemyPsykeySelected).size() == 0){
+        if (cards.enemyHandPileCardTypesNames.get(main.enemyPsykeySelected).size() == 0){
             return;
         }
 
@@ -183,11 +193,11 @@ public class Encounter {
     }
 
     public  void findSpecialCard(){
-        for (int i = 0; i < card.enemyHandPileCardTypesNames__.get(main.enemyPsykeySelected).size(); i++) {
-            if (Arrays.asList(Card.specialCards).contains(card.enemyHandPileCardTypesNames__.get(main.enemyPsykeySelected).get(i)[1])) {
-                enemyCardPlayed = card.enemyHandPileCardTypesNames__.get(main.enemyPsykeySelected).get(i);
-                card.enemyDiscardPileCardTypesNames__.get(main.enemyPsykeySelected).add(card.enemyHandPileCardTypesNames__.get(main.enemyPsykeySelected).get(i));
-                card.enemyHandPileCardTypesNames__.get(main.enemyPsykeySelected).remove(i);
+        for (int i = 0; i < cards.enemyHandPileCardTypesNames.get(main.enemyPsykeySelected).size(); i++) {
+            if (Arrays.asList(Cards.specialCards).contains(cards.enemyHandPileCardTypesNames.get(main.enemyPsykeySelected).get(i)[1])) {
+                enemyCardPlayed = cards.enemyHandPileCardTypesNames.get(main.enemyPsykeySelected).get(i);
+                cards.enemyDiscardPileCardTypesNames.get(main.enemyPsykeySelected).add(cards.enemyHandPileCardTypesNames.get(main.enemyPsykeySelected).get(i));
+                cards.enemyHandPileCardTypesNames.get(main.enemyPsykeySelected).remove(i);
 
                 main.enemyPlayIcon[main.enemyPsykeySelected] = assets.enemySpecialPlayIcon;
 
@@ -201,15 +211,15 @@ public class Encounter {
     }
 
     public void findDefendCard() {
-        for (int i = 0; i < card.enemyHandPileCardTypesNames__.get(main.enemyPsykeySelected).size(); i++) {
-            if (Arrays.asList(Card.defendCards).contains(card.enemyHandPileCardTypesNames__.get(main.enemyPsykeySelected).get(i)[1])) {
-                enemyCardPlayed = card.enemyHandPileCardTypesNames__.get(main.enemyPsykeySelected).get(i);
-                card.enemyDiscardPileCardTypesNames__.get(main.enemyPsykeySelected).add(card.enemyHandPileCardTypesNames__.get(main.enemyPsykeySelected).get(i));
-                card.enemyHandPileCardTypesNames__.get(main.enemyPsykeySelected).remove(i);
+        for (int i = 0; i < cards.enemyHandPileCardTypesNames.get(main.enemyPsykeySelected).size(); i++) {
+            if (Arrays.asList(Cards.defendCards).contains(cards.enemyHandPileCardTypesNames.get(main.enemyPsykeySelected).get(i)[1])) {
+                enemyCardPlayed = cards.enemyHandPileCardTypesNames.get(main.enemyPsykeySelected).get(i);
+                cards.enemyDiscardPileCardTypesNames.get(main.enemyPsykeySelected).add(cards.enemyHandPileCardTypesNames.get(main.enemyPsykeySelected).get(i));
+                cards.enemyHandPileCardTypesNames.get(main.enemyPsykeySelected).remove(i);
 
                 main.enemyPlayIcon[main.enemyPsykeySelected] = assets.enemyDefendPlayIcon;
 
-                if (Arrays.asList(Card.defendCards).contains(enemyCardPlayed[1])){
+                if (Arrays.asList(Cards.defendCards).contains(enemyCardPlayed[1])){
                     enemyPsykey[main.enemyPsykeySelected].block += Integer.parseInt(enemyCardPlayed[2]);
                 }
 
@@ -223,11 +233,11 @@ public class Encounter {
     }
 
     public void findAttackCard(){
-        for(int i = 0; i < card.enemyHandPileCardTypesNames__.get(main.enemyPsykeySelected).size(); i++){
-            if (Arrays.asList(Card.attackCards).contains(card.enemyHandPileCardTypesNames__.get(main.enemyPsykeySelected).get(i)[1])){
-                enemyCardPlayed = card.enemyHandPileCardTypesNames__.get(main.enemyPsykeySelected).get(i);
-                card.enemyDiscardPileCardTypesNames__.get(main.enemyPsykeySelected).add(card.enemyHandPileCardTypesNames__.get(main.enemyPsykeySelected).get(i));
-                card.enemyHandPileCardTypesNames__.get(main.enemyPsykeySelected).remove(i);
+        for(int i = 0; i < cards.enemyHandPileCardTypesNames.get(main.enemyPsykeySelected).size(); i++){
+            if (Arrays.asList(Cards.attackCards).contains(cards.enemyHandPileCardTypesNames.get(main.enemyPsykeySelected).get(i)[1])){
+                enemyCardPlayed = cards.enemyHandPileCardTypesNames.get(main.enemyPsykeySelected).get(i);
+                cards.enemyDiscardPileCardTypesNames.get(main.enemyPsykeySelected).add(cards.enemyHandPileCardTypesNames.get(main.enemyPsykeySelected).get(i));
+                cards.enemyHandPileCardTypesNames.get(main.enemyPsykeySelected).remove(i);
 
                 main.enemyPlayIcon[main.enemyPsykeySelected] = assets.enemyAttackPlayIcon;
 
@@ -238,6 +248,70 @@ public class Encounter {
         }
 
         enemyTurn();
+    }
+    public void resetStats(Psykey[] psykey, Psykey[] psykeyRef, int psykeySelected){
+        System.out.println("");
+        psykey[psykeySelected].idProwessValue = psykeyRef[psykeySelected].idProwessValue;
+        psykey[psykeySelected].egoProwessValue = psykeyRef[psykeySelected].egoProwessValue;
+        psykey[psykeySelected].superegoProwessValue = psykeyRef[psykeySelected].superegoProwessValue;
+
+        psykey[psykeySelected].idDefenseValue = psykeyRef[psykeySelected].idDefenseValue;
+        psykey[psykeySelected].egoDefenseValue = psykeyRef[psykeySelected].egoDefenseValue;
+        psykey[psykeySelected].superegoDefenseValue = psykeyRef[psykeySelected].superegoDefenseValue;
+    }
+
+
+    public void playEnemySpecialCard(){
+        if (Objects.equals(enemyCardPlayed[1], "Slander")){
+            resetStats(playerPsykey, playerPsykeyRef, main.playerPsykeySelected);
+
+            playerPsykey[main.playerPsykeySelected].statusEffect = assets.playerDefDownIcon;
+
+            switch (enemyCardPlayed[0]){
+                case "Id":
+                    playerPsykey[main.playerPsykeySelected].idDefenseValue =
+                            playerPsykeyRef[main.playerPsykeySelected].idDefenseValue - 3;
+
+                    break;
+
+                case "Ego":
+                    playerPsykey[main.playerPsykeySelected].egoDefenseValue =
+                            playerPsykey[main.playerPsykeySelected].egoDefenseValue - 3;
+
+                    break;
+
+                case "Superego":
+                    playerPsykey[main.playerPsykeySelected].superegoDefenseValue =
+                            playerPsykey[main.playerPsykeySelected].superegoDefenseValue - 3;
+
+                    break;
+            }
+
+        } else if (Objects.equals(enemyCardPlayed[1], "Battlecry")){
+            resetStats(enemyPsykey, enemyPsykeyRef, main.enemyPsykeySelected);
+
+            enemyPsykey[main.enemyPsykeySelected].statusEffect = assets.enemyProwUpIcon;
+
+            switch (enemyCardPlayed[0]){
+                case "Id":
+                    enemyPsykey[main.enemyPsykeySelected].idProwessValue =
+                            enemyPsykeyRef[main.enemyPsykeySelected].idProwessValue + 3;
+
+                    break;
+
+                case "Ego":
+                    enemyPsykey[main.enemyPsykeySelected].egoProwessValue =
+                            enemyPsykeyRef[main.enemyPsykeySelected].egoProwessValue  + 3;
+
+                    break;
+
+                case "Superego":
+                    enemyPsykey[main.enemyPsykeySelected].superegoProwessValue =
+                            enemyPsykeyRef[main.enemyPsykeySelected].superegoProwessValue + 3;
+
+                    break;
+            }
+        }
     }
 
     public void handleEnemyTurnEnd(){

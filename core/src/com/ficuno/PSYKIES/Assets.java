@@ -1,6 +1,8 @@
-package com.ficuno.creature;
+package com.ficuno.PSYKIES;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -50,8 +52,10 @@ public class Assets {
     TextureRegion actionsIconOpen;
     Texture statsDisplayTexture;
     Texture statsCounterTexture;
-    TextureRegion[] statsCounterIcons;
-    TextureRegion[] statsCounterIconsMirror;
+    TextureRegion[] statsCounterPositiveIcons;
+    TextureRegion[] statsCounterPositiveIconsMirror;
+    TextureRegion[] statsCounterNegativeIcons;
+    TextureRegion[] statsCounterNegativeIconsMirror;
     float w;
     float h;
     FreeTypeFontGenerator fontGenerator;
@@ -59,8 +63,8 @@ public class Assets {
     BitmapFont font;
     GlyphLayout glyphLayout;
     Texture chooseButtonTexture;
-    TextureRegion chooseButtonIcon;
-    TextureRegion chooseButtonBackground;
+    TextureRegion choiceButtonIcon;
+    TextureRegion choiceButtonBackground;
     TextureRegion playerDefDownIcon;
     TextureRegion playerDefUpIcon;
     TextureRegion playerProwDownIcon;
@@ -69,12 +73,23 @@ public class Assets {
     TextureRegion enemyDefUpIcon;
     TextureRegion enemyProwDownIcon;
     TextureRegion enemyProwUpIcon;
+    Sound cardSlideSound1;
+    Sound cardSlideSound2;
+    Sound cardPlaceSound1;
+    Sound cardPlaceSound2;
+    Sound uiSound;
+    Sound encounterLoseSound;
+    Sound encounterWonSound;
+    Sound chooseSound;
+    Music encounterMusic;
     public Assets(){
         idCards = new TextureRegion[Main.maxCards];
         egoCards = new TextureRegion[Main.maxCards];
         superegoCards = new TextureRegion[Main.maxCards];
-        statsCounterIcons = new TextureRegion[10];
-        statsCounterIconsMirror = new TextureRegion[10];
+        statsCounterPositiveIcons = new TextureRegion[10];
+        statsCounterPositiveIconsMirror = new TextureRegion[10];
+        statsCounterNegativeIcons = new TextureRegion[10];
+        statsCounterNegativeIconsMirror = new TextureRegion[10];
 
         fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
         fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -105,6 +120,17 @@ public class Assets {
         statsDisplayTexture = new Texture(Gdx.files.internal("statsDisplayTexture.png"));
         statsCounterTexture = new Texture(Gdx.files.internal("statsCounterTexture.png"));
         chooseButtonTexture = new Texture(Gdx.files.internal("chooseButtonTexture.png"));
+
+        cardSlideSound1 = Gdx.audio.newSound(Gdx.files.internal("cardSlideSound1.ogg"));
+        cardSlideSound2 = Gdx.audio.newSound(Gdx.files.internal("cardSlideSound2.ogg"));
+        cardPlaceSound1 = Gdx.audio.newSound(Gdx.files.internal("cardPlaceSound1.ogg"));
+        cardPlaceSound2 = Gdx.audio.newSound(Gdx.files.internal("cardPlaceSound2.ogg"));
+        encounterLoseSound = Gdx.audio.newSound(Gdx.files.internal("encounterLoseSound.mp3"));
+        encounterWonSound = Gdx.audio.newSound(Gdx.files.internal("encounterWonSound.mp3"));
+        chooseSound = Gdx.audio.newSound(Gdx.files.internal("chooseSound.mp3"));
+
+        uiSound = Gdx.audio.newSound(Gdx.files.internal("uiSound.mp3"));
+        encounterMusic = Gdx.audio.newMusic(Gdx.files.internal("encounterMusic.wav"));
     }
 
     public void createAssets() {
@@ -138,8 +164,10 @@ public class Assets {
         }
 
         for (int x = 0; x < 10; x++){
-            statsCounterIcons[x] = new TextureRegion(splitTexture(statsCounterTexture, x, 80, 16)[0]);
-            statsCounterIconsMirror[x] = new TextureRegion(mirrorTexture(statsCounterTexture, x, 80, 16)[0]);
+            statsCounterPositiveIcons[x] = new TextureRegion(splitTexture(statsCounterTexture, x, 80, 16)[0]);
+            statsCounterPositiveIconsMirror[x] = new TextureRegion(mirrorTexture(statsCounterTexture, x, 80, 16)[0]);
+            statsCounterNegativeIcons[x] = new TextureRegion(splitTexture(statsCounterTexture, x + 10, 80, 16)[0]);
+            statsCounterNegativeIconsMirror[x] = new TextureRegion(mirrorTexture(statsCounterTexture, x + 10, 80, 16)[0]);
         }
 
         helpIcon = new TextureRegion(splitTexture(systemIconsTexture, 0, 96,96)[0]);
@@ -167,21 +195,21 @@ public class Assets {
         playerDefendPlayIcon = new TextureRegion(splitTexture(encounterIconsTexture, 1, 80, 64)[1]);
         playerSpecialPlayIcon = new TextureRegion(splitTexture(encounterIconsTexture, 1, 80, 64)[2]);
 
-        chooseButtonIcon = new TextureRegion(splitTexture(chooseButtonTexture, 0, 320,80)[0]);
-        chooseButtonBackground = new TextureRegion(splitTexture(chooseButtonTexture, 1, 320,80)[0]);
+        choiceButtonIcon = new TextureRegion(splitTexture(chooseButtonTexture, 0, 320,80)[0]);
+        choiceButtonBackground = new TextureRegion(splitTexture(chooseButtonTexture, 1, 320,80)[0]);
 
         spotlight = new TextureRegion(splitTexture(spotlightTexture, 0, 216,80)[0]);
         notSpotlight = new TextureRegion(splitTexture(spotlightTexture, 1, 216,80)[0]);
 
         playerDefDownIcon = new TextureRegion(splitTexture(encounterIconsTexture, 2, 80, 64)[0]);
         playerDefUpIcon = new TextureRegion(splitTexture(encounterIconsTexture, 2, 80, 64)[1]);
-        playerProwDownIcon = new TextureRegion(splitTexture(encounterIconsTexture, 3, 80, 64)[0]);
-        playerProwUpIcon = new TextureRegion(splitTexture(encounterIconsTexture, 3, 80, 64)[1]);
+        playerProwDownIcon = new TextureRegion(splitTexture(encounterIconsTexture, 4, 80, 64)[0]);
+        playerProwUpIcon = new TextureRegion(splitTexture(encounterIconsTexture, 4, 80, 64)[1]);
 
-        enemyDefDownIcon = new TextureRegion(mirrorTexture(encounterIconsTexture, 2, 80, 64)[0]);
-        enemyDefUpIcon = new TextureRegion(mirrorTexture(encounterIconsTexture, 2, 80, 64)[1]);
-        enemyProwDownIcon = new TextureRegion(mirrorTexture(encounterIconsTexture, 3, 80, 64)[0]);
-        enemyProwUpIcon = new TextureRegion(mirrorTexture(encounterIconsTexture, 3, 80, 64)[1]);
+        enemyDefDownIcon = new TextureRegion(splitTexture(encounterIconsTexture, 3, 80, 64)[1]);
+        enemyDefUpIcon = new TextureRegion(splitTexture(encounterIconsTexture, 3, 80, 64)[0]);
+        enemyProwDownIcon = new TextureRegion(splitTexture(encounterIconsTexture, 5, 80, 64)[1]);
+        enemyProwUpIcon = new TextureRegion(splitTexture(encounterIconsTexture, 5, 80, 64)[0]);
     }
 
     public static TextureRegion[] splitTexture(Texture texture, int index, int width, int height){
@@ -209,7 +237,24 @@ public class Assets {
         h = glyphLayout.height;
     }
 
-    public TextureRegion getTexture(String cardType, String cardName){
+    public TextureRegion getStatsTexture(int statValue, boolean mirrored){
+        if (mirrored){
+            if (statValue >= 0){
+                return statsCounterPositiveIconsMirror[statValue];
+            } else {
+                return statsCounterNegativeIconsMirror[-statValue];
+            }
+
+        } else {
+            if (statValue >= 0){
+                return statsCounterPositiveIcons[statValue];
+            } else {
+                return statsCounterNegativeIcons[-statValue];
+            }
+        }
+    }
+
+    public TextureRegion getCardTexture(String cardType, String cardName){
         switch (cardType) {
             case "Id":
                 switch (cardName) {

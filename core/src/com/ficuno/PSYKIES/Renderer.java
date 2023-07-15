@@ -1,5 +1,6 @@
-package com.ficuno.creature;
+package com.ficuno.PSYKIES;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -23,7 +24,7 @@ public class Renderer {
     OrthographicCamera cam;
     SpriteBatch batch = new SpriteBatch();
     ShapeRenderer shape;
-    Card card;
+    Cards cards;
     Controller controller;
     BitmapFont font;
     GlyphLayout glyphLayout;
@@ -41,7 +42,8 @@ public class Renderer {
     Encounter encounter;
     Vector2 playerCardDisplayPos;
     Vector2 enemyCardDisplayPos;
-    Starter starter;
+    Choose choose;
+    Change change;
 
     public Renderer(Main main){
         this.main = main;
@@ -51,10 +53,11 @@ public class Renderer {
         this.enemyPsykeyRef = main.enemyPsykeyRef;
         this.controller = main.controller;
         this.encounter = main.encounter;
-        this.card = main.card;
+        this.cards = main.cards;
         this.assets = main.assets;
         this.touchRegion = main.touchRegion;
-        this.starter = main.starter;
+        this.choose = main.choose;
+        this.change = main.change;
 
         font = assets.font;
         glyphLayout = assets.glyphLayout;
@@ -113,18 +116,50 @@ public class Renderer {
                     encounter.enemyTurn();
                 }
 
-                if (playerPsykey[main.playerPsykeySelected].healthPoints == 0){
-                    if (main.playerPsykeySelected == Main.FIRST){
-                        if (playerPsykey[Main.SECOND] != null){
-                            main.playerPsykeySelected = Main.SECOND;
-                        } else {
-                            GameScreen.lost = true;
+                if (GameScreen.gameState == GameScreen.NEITHER) {
+                    if (playerPsykey[Main.FIRST] != null && playerPsykey[Main.SECOND] != null){
+                        if (playerPsykey[Main.FIRST].healthPoints == 0 && playerPsykey[Main.SECOND].healthPoints == 0){
+                            GameScreen.gameState = GameScreen.LOST;
+                            assets.encounterMusic.pause();
                         }
-                    } else {
-                        if (playerPsykey[Main.FIRST] != null){
-                            main.playerPsykeySelected = Main.FIRST;
+                    }
+
+                    if (enemyPsykey[main.enemyPsykeySelected].healthPoints == 0) {
+                        if (main.enemyPsykeySelected == Main.FIRST) {
+                            if (enemyPsykey[Main.SECOND] != null) {
+                                main.enemyPsykeySelected = Main.SECOND;
+                            } else {
+                                GameScreen.gameState = GameScreen.WON;
+                                assets.encounterWonSound.play(1);
+                                assets.encounterMusic.pause();
+                            }
                         } else {
-                            GameScreen.lost = true;
+                            if (enemyPsykey[Main.FIRST] != null) {
+                                main.enemyPsykeySelected = Main.FIRST;
+                            } else {
+                                GameScreen.gameState = GameScreen.WON;
+                                assets.encounterWonSound.play(1);
+                                assets.encounterMusic.pause();
+                            }
+                        }
+
+                    } else if (playerPsykey[main.playerPsykeySelected].healthPoints == 0) {
+                        if (main.playerPsykeySelected == Main.FIRST) {
+                            if (playerPsykey[Main.SECOND] != null) {
+                                main.playerPsykeySelected = Main.SECOND;
+                            } else {
+                                GameScreen.gameState = GameScreen.LOST;
+                                assets.encounterLoseSound.play(1);
+                                assets.encounterMusic.pause();
+                            }
+                        } else {
+                            if (playerPsykey[Main.FIRST] != null) {
+                                main.playerPsykeySelected = Main.FIRST;
+                            } else {
+                                GameScreen.gameState = GameScreen.LOST;
+                                assets.encounterLoseSound.play(1);
+                                assets.encounterMusic.pause();
+                            }
                         }
                     }
                 }
@@ -148,23 +183,27 @@ public class Renderer {
         batch.begin();
         batch.setProjectionMatrix(cam.combined);
 
-        if (!GameScreen.lost){
-            if (main.chosePsykey){
+        if (GameScreen.gameState == GameScreen.LOST) {
+            renderLost();
+
+        } else if (GameScreen.gameState == GameScreen.WON){
+            renderWon();
+
+        } else {
+            if (main.choicePsykeyState == Main.CHOSEN) {
                 renderBackground();
                 renderCards();
                 renderUI();
                 renderOtherUI();
                 renderPsykies();
                 renderText();
+                renderOverlay(deltaTime);
+            } else if (main.choicePsykeyState == Main.NOT_CHOSEN) {
+                choose.render(batch, font);
             } else {
-                starter.render(batch, font);
+                change.render(batch, font);
             }
-        } else {
-            renderLost();
         }
-
-
-        renderOverlay(deltaTime);
 
         batch.end();
         shape.end();
@@ -205,11 +244,19 @@ public class Renderer {
     public void renderText(){
         //font.draw(batch, "Deal 15 damage to the enemy and inflict stun.", 100,100);
 
-        assets.setGlyphLayout(card.playerDrawPileCardTypesNames__.get(main.playerPsykeySelected).size());
-        font.draw(batch, glyphLayout, (Main.SCREEN_WIDTH - (104 + assets.drawPileIcon.getRegionWidth())) - assets.w/2, 208 + assets.h);
+        if (Main.SCREEN_HEIGHT < 800){
+            assets.setGlyphLayout(cards.playerDrawPileCardTypesNames.get(main.playerPsykeySelected).size());
+            font.draw(batch, glyphLayout, (Main.SCREEN_WIDTH - (104 + assets.drawPileIcon.getRegionWidth())) - assets.w/2, 208 + assets.h);
 
-        assets.setGlyphLayout(card.playerDiscardPileCardTypesNames__.get(main.playerPsykeySelected).size());
-        font.draw(batch, glyphLayout, (100 + assets.drawPileIcon.getRegionWidth()) - assets.w/2, 208 + assets.h);
+            assets.setGlyphLayout(cards.playerDiscardPileCardTypesNames.get(main.playerPsykeySelected).size());
+            font.draw(batch, glyphLayout, (100 + assets.drawPileIcon.getRegionWidth()) - assets.w/2, 208 + assets.h);
+        } else {
+            assets.setGlyphLayout(cards.playerDrawPileCardTypesNames.get(main.playerPsykeySelected).size());
+            font.draw(batch, glyphLayout, (Main.SCREEN_WIDTH - (404 + assets.drawPileIcon.getRegionWidth())) - assets.w/2, 208 + assets.h);
+
+            assets.setGlyphLayout(cards.playerDiscardPileCardTypesNames.get(main.playerPsykeySelected).size());
+            font.draw(batch, glyphLayout, (400 + assets.drawPileIcon.getRegionWidth()) - assets.w/2, 208 + assets.h);
+        }
 
         if (!main.showStatsPlayer){
             assets.setGlyphLayout(playerPsykey[main.playerPsykeySelected].name);
@@ -235,21 +282,49 @@ public class Renderer {
     }
 
     public void renderOtherUI(){
-        batch.draw(assets.helpIcon, 0, Creature.HEIGHT - (assets.helpIcon.getRegionHeight() + 10));
-        batch.draw(assets.menuIcon, Main.SCREEN_WIDTH - (assets.menuIcon.getRegionWidth() + 10),
-                Creature.HEIGHT - (assets.menuIcon.getRegionHeight() + 10));
-        batch.draw(assets.bagIcon, 10, 10);
-        batch.draw(main.actionsMenuState, Main.SCREEN_WIDTH - (main.actionsMenuState.getRegionWidth() + 10), 10);
+        if (Main.SCREEN_HEIGHT < 800){
+            batch.draw(assets.helpIcon, 0, Creature.HEIGHT - (assets.helpIcon.getRegionHeight() + 10));
+            batch.draw(assets.menuIcon, Main.SCREEN_WIDTH - (assets.menuIcon.getRegionWidth() + 10),
+                    Creature.HEIGHT - (assets.menuIcon.getRegionHeight() + 10));
+            batch.draw(assets.bagIcon, 10, 10);
+            batch.draw(main.actionsMenuState, Main.SCREEN_WIDTH - (main.actionsMenuState.getRegionWidth() + 10), 10);
 
+            touchRegion.uiTouchRegionPolys.get(0).setPosition(0, Creature.HEIGHT - (assets.helpIcon.getRegionHeight() + 10));
+            touchRegion.uiTouchRegionPolys.get(1).setPosition(Main.SCREEN_WIDTH - (assets.menuIcon.getRegionWidth() + 10),
+                    Creature.HEIGHT - (assets.menuIcon.getRegionHeight() + 10));
+            touchRegion.uiTouchRegionPolys.get(2).setPosition(10, 10);
+            touchRegion.uiTouchRegionPolys.get(3).setPosition(Main.SCREEN_WIDTH - (assets.actionsIconClose.getRegionWidth() + 10), 10);
 
-        touchRegion.uiTouchRegionPolys.get(0).setPosition(0, Creature.HEIGHT - (assets.helpIcon.getRegionHeight() + 10));
-        touchRegion.uiTouchRegionPolys.get(1).setPosition(Main.SCREEN_WIDTH - (assets.menuIcon.getRegionWidth() + 10),
-                Creature.HEIGHT - (assets.menuIcon.getRegionHeight() + 10));
-        touchRegion.uiTouchRegionPolys.get(2).setPosition(10, 10);
-        touchRegion.uiTouchRegionPolys.get(3).setPosition(Main.SCREEN_WIDTH - (assets.actionsIconClose.getRegionWidth() + 10), 10);
+            if (main.actionsMenuState == assets.actionsIconOpen){
+                touchRegion.switchPsykeyPoly.setPosition(Main.SCREEN_WIDTH - (assets.actionsIconClose.getRegionWidth() + 10), (assets.actionsIconClose.getRegionHeight() * 2 + 25));
+            } else {
+                touchRegion.switchPsykeyPoly.setPosition(-404, -404);
+            }
 
-        batch.draw(assets.discardPileIcon, 104, 140);
-        batch.draw(assets.drawPileIcon, Main.SCREEN_WIDTH - (104 + assets.drawPileIcon.getRegionWidth()), 140);
+            batch.draw(assets.discardPileIcon, 104, 140);
+            batch.draw(assets.drawPileIcon, Main.SCREEN_WIDTH - (104 + assets.drawPileIcon.getRegionWidth()), 140);
+        } else {
+            batch.draw(assets.helpIcon, 300, Creature.HEIGHT - (assets.helpIcon.getRegionHeight() + 10));
+            batch.draw(assets.menuIcon, (Main.SCREEN_WIDTH - 300) - (assets.menuIcon.getRegionWidth() + 10),
+                    Creature.HEIGHT - (assets.menuIcon.getRegionHeight() + 10));
+            batch.draw(assets.bagIcon, 310, 10);
+            batch.draw(main.actionsMenuState, (Main.SCREEN_WIDTH - 300) - (main.actionsMenuState.getRegionWidth() + 10), 10);
+
+            touchRegion.uiTouchRegionPolys.get(0).setPosition(300, Creature.HEIGHT - (assets.helpIcon.getRegionHeight() + 10));
+            touchRegion.uiTouchRegionPolys.get(1).setPosition((Main.SCREEN_WIDTH - 300) - (assets.menuIcon.getRegionWidth() + 10),
+                    Creature.HEIGHT - (assets.menuIcon.getRegionHeight() + 10));
+            touchRegion.uiTouchRegionPolys.get(2).setPosition(310, 10);
+            touchRegion.uiTouchRegionPolys.get(3).setPosition((Main.SCREEN_WIDTH - 300) - (assets.actionsIconClose.getRegionWidth() + 10), 10);
+
+            if (main.actionsMenuState == assets.actionsIconOpen){
+                touchRegion.switchPsykeyPoly.setPosition((Main.SCREEN_WIDTH - 300) - (assets.actionsIconClose.getRegionWidth() + 10), (assets.actionsIconClose.getRegionHeight() * 2 + 25));
+            } else {
+                touchRegion.switchPsykeyPoly.setPosition(-404, -404);
+            }
+
+            batch.draw(assets.discardPileIcon, 404, 140);
+            batch.draw(assets.drawPileIcon, (Main.SCREEN_WIDTH - 300) - (104 + assets.drawPileIcon.getRegionWidth()), 140);
+        }
     }
 
     public void renderUI(){
@@ -261,6 +336,11 @@ public class Renderer {
             if (main.playerPlayIcon[main.playerPsykeySelected] != null){
                 batch.draw(main.playerPlayIcon[main.playerPsykeySelected],
                         ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) + 96, 400);
+            }
+
+            if (playerPsykey[main.playerPsykeySelected].statusEffect != null){
+                batch.draw(playerPsykey[main.playerPsykeySelected].statusEffect,
+                        ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH/4f)) - 16, 296);
             }
 
         }
@@ -275,134 +355,140 @@ public class Renderer {
                 batch.draw(main.enemyPlayIcon[main.enemyPsykeySelected],
                         ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) + 144, 500);
             }
+
+            if (enemyPsykey[main.enemyPsykeySelected].statusEffect != null){
+                batch.draw(enemyPsykey[main.enemyPsykeySelected].statusEffect,
+                        ((Main.SCREEN_WIDTH / 2f) + (Main.SCREEN_WIDTH/4f)) - 64, 604);
+            }
         }
     }
 
     public void renderCards(){
-        if (card.playerHandPileCardTypesNames__ == null){
+        if (cards.playerHandPileCardTypesNames == null){
             return;
         }
 
         for (int x = 0; x < 6; x++){
             handCardPos.get(x).set(Main.SCREEN_WIDTH / 2f -
-                            findStartPos(card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).size()) - getXPosition(x + 1),
+                            findStartPos(cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).size()) - getXPosition(x + 1),
                     40 + main.handCardSelected.get(x));
 
             handCardTextPos.get(x).set(Main.SCREEN_WIDTH / 2f -
-                            findStartPos(card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).size()) - getXPosition(x + 1),
+                            findStartPos(cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).size()) - getXPosition(x + 1),
                     222 + main.handCardSelected.get(x));
 
             handCardTextPos2.get(x).set(Main.SCREEN_WIDTH / 2f -
-                            findStartPos(card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).size()) - getXPosition(x + 1),
+                            findStartPos(cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).size()) - getXPosition(x + 1),
                     67 + main.handCardSelected.get(x));
         }
 
-        for (int x = 0; x < touchRegion.cardTouchRegionPolys__.get(main.playerPsykeySelected).size(); x++){
-            touchRegion.cardTouchRegionPolys__.get(main.playerPsykeySelected).get(x).setPosition(handCardPos.get(x).x, handCardPos.get(x).y);
+        for (int x = 0; x < touchRegion.cardTouchRegionPolys.get(main.playerPsykeySelected).size(); x++){
+            touchRegion.cardTouchRegionPolys.get(main.playerPsykeySelected).get(x).setPosition(handCardPos.get(x).x, handCardPos.get(x).y);
         }
 
-        if (card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).size() >= 1){
+        if (cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).size() >= 1){
             batch.draw(assets.cardBackgroundTexture, handCardPos.get(0).x + 16, handCardPos.get(0).y - 16);
             batch.draw(getTexture(0), handCardPos.get(0).x, handCardPos.get(0).y);
 
-            if ((card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(0)).length == 3){
-                assets.setGlyphLayout(card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(0)[2]);
+            if ((cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(0)).length == 3){
+                assets.setGlyphLayout(cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(0)[2]);
                 font.draw(batch, glyphLayout, handCardTextPos.get(0).x + 22 - assets.w/2, handCardTextPos.get(0).y);
 
-                assets.setGlyphLayout(card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(0)[2]);
+                assets.setGlyphLayout(cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(0)[2]);
                 font.draw(batch, glyphLayout, handCardTextPos2.get(0).x + 90 - assets.w/2, handCardTextPos2.get(0).y);
             }
         }
 
-        if (card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).size() >= 2){
+        if (cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).size() >= 2){
             batch.draw(assets.cardBackgroundTexture, handCardPos.get(1).x + 16, handCardPos.get(1).y - 16);
             batch.draw(getTexture(1), handCardPos.get(1).x, handCardPos.get(1).y);
 
-            if ((card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(1)).length == 3){
-                assets.setGlyphLayout(card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(1)[2]);
+            if ((cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(1)).length == 3){
+                assets.setGlyphLayout(cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(1)[2]);
                 font.draw(batch, glyphLayout, handCardTextPos.get(1).x + 22 - assets.w/2, handCardTextPos.get(1).y);
 
-                assets.setGlyphLayout(card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(1)[2]);
+                assets.setGlyphLayout(cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(1)[2]);
                 font.draw(batch, glyphLayout, handCardTextPos2.get(1).x + 90 - assets.w/2, handCardTextPos2.get(1).y);
             }
         }
 
-        if (card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).size() >= 3){
+        if (cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).size() >= 3){
             batch.draw(assets.cardBackgroundTexture, handCardPos.get(2).x + 16, handCardPos.get(2).y - 16);
             batch.draw(getTexture(2), handCardPos.get(2).x, handCardPos.get(2).y);
 
-            if ((card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(2)).length == 3){
-                assets.setGlyphLayout(card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(2)[2]);
+            if ((cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(2)).length == 3){
+                assets.setGlyphLayout(cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(2)[2]);
                 font.draw(batch, glyphLayout, handCardTextPos.get(2).x + 22 - assets.w/2, handCardTextPos.get(2).y);
 
-                assets.setGlyphLayout(card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(2)[2]);
+                assets.setGlyphLayout(cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(2)[2]);
                 font.draw(batch, glyphLayout, handCardTextPos2.get(2).x + 90 - assets.w/2, handCardTextPos2.get(2).y);
             }
         }
 
-        if (card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).size() >= 4){
+        if (cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).size() >= 4){
             batch.draw(assets.cardBackgroundTexture, handCardPos.get(3).x + 16, handCardPos.get(3).y - 16);
             batch.draw(getTexture(3), handCardPos.get(3).x, handCardPos.get(3).y);
 
-            if ((card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(3)).length == 3){
-                assets.setGlyphLayout(card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(3)[2]);
+            if ((cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(3)).length == 3){
+                assets.setGlyphLayout(cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(3)[2]);
                 font.draw(batch, glyphLayout, handCardTextPos.get(3).x + 22 - assets.w/2, handCardTextPos.get(3).y);
 
-                assets.setGlyphLayout(card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(3)[2]);
+                assets.setGlyphLayout(cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(3)[2]);
                 font.draw(batch, glyphLayout, handCardTextPos2.get(3).x + 90 - assets.w/2, handCardTextPos2.get(3).y);
             }
         }
 
-        if (card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).size() >= 5){
+        if (cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).size() >= 5){
             batch.draw(assets.cardBackgroundTexture, handCardPos.get(4).x + 16, handCardPos.get(4).y - 16);
             batch.draw(getTexture(4), handCardPos.get(4).x, handCardPos.get(4).y);
 
-            if ((card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(4)).length == 3){
-                assets.setGlyphLayout(card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(4)[2]);
+            if ((cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(4)).length == 3){
+                assets.setGlyphLayout(cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(4)[2]);
                 font.draw(batch, glyphLayout, handCardTextPos.get(4).x + 22 - assets.w/2, handCardTextPos.get(4).y);
 
-                assets.setGlyphLayout(card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(4)[2]);
+                assets.setGlyphLayout(cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(4)[2]);
                 font.draw(batch, glyphLayout, handCardTextPos2.get(4).x + 90 - assets.w/2, handCardTextPos2.get(4).y);
             }
         }
 
-        if (card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).size() >= 6){
+        if (cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).size() >= 6){
             batch.draw(assets.cardBackgroundTexture, handCardPos.get(5).x + 16, handCardPos.get(5).y - 16);
             batch.draw(getTexture(5), handCardPos.get(5).x, handCardPos.get(5).y);
 
-            if ((card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(5)).length == 3){
-                assets.setGlyphLayout(card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(5)[2]);
+            if ((cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(5)).length == 3){
+                assets.setGlyphLayout(cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(5)[2]);
                 font.draw(batch, glyphLayout, handCardTextPos.get(5).x + 22 - assets.w/2, handCardTextPos.get(5).y);
 
-                assets.setGlyphLayout(card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(5)[2]);
+                assets.setGlyphLayout(cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(5)[2]);
                 font.draw(batch, glyphLayout, handCardTextPos2.get(5).x + 90 - assets.w/2, handCardTextPos2.get(5).y);
             }
         }
     }
 
     public void showStats(){
+        
         if (main.showStatsEnemy){
             batch.draw(assets.statsDisplayTexture, (Main.SCREEN_WIDTH/2f + 160) - assets.statsDisplayTexture.getWidth()/2f, 500);
+            
+            batch.draw(assets.getStatsTexture(enemyPsykey[main.enemyPsykeySelected].idDefenseValue, true), Main.SCREEN_WIDTH/2f - 96,636);
+            batch.draw(assets.getStatsTexture(enemyPsykey[main.enemyPsykeySelected].egoDefenseValue, true), Main.SCREEN_WIDTH/2f - 96,584);
+            batch.draw(assets.getStatsTexture(enemyPsykey[main.enemyPsykeySelected].superegoDefenseValue, true), Main.SCREEN_WIDTH/2f - 96,532);
 
-            batch.draw(assets.statsCounterIconsMirror[enemyPsykey[main.enemyPsykeySelected].idDefenseValue], Main.SCREEN_WIDTH/2f - 96,636);
-            batch.draw(assets.statsCounterIconsMirror[enemyPsykey[main.enemyPsykeySelected].egoDefenseValue], Main.SCREEN_WIDTH/2f - 96,584);
-            batch.draw(assets.statsCounterIconsMirror[enemyPsykey[main.enemyPsykeySelected].superegoDefenseValue], Main.SCREEN_WIDTH/2f - 96,532);
-
-            batch.draw(assets.statsCounterIcons[enemyPsykey[main.enemyPsykeySelected].idProwessValue], Main.SCREEN_WIDTH/2f + 336,636);
-            batch.draw(assets.statsCounterIcons[enemyPsykey[main.enemyPsykeySelected].egoProwessValue], Main.SCREEN_WIDTH/2f + 336,584);
-            batch.draw(assets.statsCounterIcons[enemyPsykey[main.enemyPsykeySelected].superegoProwessValue], Main.SCREEN_WIDTH/2f + 336,532);
+            batch.draw(assets.getStatsTexture(enemyPsykey[main.enemyPsykeySelected].idProwessValue, false), Main.SCREEN_WIDTH/2f + 336,636);
+            batch.draw(assets.getStatsTexture(enemyPsykey[main.enemyPsykeySelected].egoProwessValue, false), Main.SCREEN_WIDTH/2f + 336,584);
+            batch.draw(assets.getStatsTexture(enemyPsykey[main.enemyPsykeySelected].superegoProwessValue, false), Main.SCREEN_WIDTH/2f + 336,532);
         }
 
         if (main.showStatsPlayer){
             batch.draw(assets.statsDisplayTexture, (Main.SCREEN_WIDTH/2f - 160) - assets.statsDisplayTexture.getWidth()/2f, 300);
 
-            batch.draw(assets.statsCounterIconsMirror[playerPsykey[main.playerPsykeySelected].idDefenseValue], Main.SCREEN_WIDTH/2f - 416,436);
-            batch.draw(assets.statsCounterIconsMirror[playerPsykey[main.playerPsykeySelected].idDefenseValue], Main.SCREEN_WIDTH/2f - 416,384);
-            batch.draw(assets.statsCounterIconsMirror[playerPsykey[main.playerPsykeySelected].idDefenseValue], Main.SCREEN_WIDTH/2f - 416,332);
+            batch.draw(assets.getStatsTexture(playerPsykey[main.playerPsykeySelected].idDefenseValue, true), Main.SCREEN_WIDTH/2f - 416,436);
+            batch.draw(assets.getStatsTexture(playerPsykey[main.playerPsykeySelected].egoDefenseValue, true), Main.SCREEN_WIDTH/2f - 416,384);
+            batch.draw(assets.getStatsTexture(playerPsykey[main.playerPsykeySelected].superegoDefenseValue, true), Main.SCREEN_WIDTH/2f - 416,332);
 
-            batch.draw(assets.statsCounterIcons[playerPsykey[main.playerPsykeySelected].idProwessValue], Main.SCREEN_WIDTH/2f + 16,436);
-            batch.draw(assets.statsCounterIcons[playerPsykey[main.playerPsykeySelected].egoProwessValue], Main.SCREEN_WIDTH/2f + 16,384);
-            batch.draw(assets.statsCounterIcons[playerPsykey[main.playerPsykeySelected].superegoProwessValue], Main.SCREEN_WIDTH/2f + 16,332);
+            batch.draw(assets.getStatsTexture(playerPsykey[main.playerPsykeySelected].idProwessValue, false), Main.SCREEN_WIDTH/2f + 16,436);
+            batch.draw(assets.getStatsTexture(playerPsykey[main.playerPsykeySelected].egoProwessValue, false), Main.SCREEN_WIDTH/2f + 16,384);
+            batch.draw(assets.getStatsTexture(playerPsykey[main.playerPsykeySelected].superegoProwessValue, false), Main.SCREEN_WIDTH/2f + 16,332);
         }
     }
 
@@ -411,7 +497,7 @@ public class Renderer {
             if (encounter.playerCardPlayedPrev != null && encounter.enemyCardPlayedPrev != null){
                 batch.draw(assets.cardBackgroundTexture, playerCardDisplayPos.x + 16, playerCardDisplayPos.y - 16);
 
-                batch.draw(assets.getTexture(encounter.playerCardPlayedPrev[0], encounter.playerCardPlayedPrev[1]),
+                batch.draw(assets.getCardTexture(encounter.playerCardPlayedPrev[0], encounter.playerCardPlayedPrev[1]),
                         playerCardDisplayPos.x, playerCardDisplayPos.y);
 
                 assets.setGlyphLayout(encounter.playerCardPlayedPrev[2]);
@@ -422,7 +508,7 @@ public class Renderer {
 
                 batch.draw(assets.cardBackgroundTexture, enemyCardDisplayPos.x,enemyCardDisplayPos.y - 16);
 
-                batch.draw(assets.getTexture(encounter.enemyCardPlayedPrev[0], encounter.enemyCardPlayedPrev[1]),
+                batch.draw(assets.getCardTexture(encounter.enemyCardPlayedPrev[0], encounter.enemyCardPlayedPrev[1]),
                         enemyCardDisplayPos.x - 16, enemyCardDisplayPos.y);
 
                 assets.setGlyphLayout(encounter.enemyCardPlayedPrev[2]);
@@ -450,6 +536,17 @@ public class Renderer {
         }
     }
 
+    public void renderWon() {
+        batch.draw(assets.backgrounds[2], -668, -266);
+
+        font.setColor(new Color(99/255f, 155/255f, 255/255f, 255/255f));
+        font.getData().setScale(1.5f);
+        assets.setGlyphLayout("REMARKABLE!");
+        font.draw(batch, glyphLayout, Main.SCREEN_WIDTH/2f - assets.w/2, Main.SCREEN_HEIGHT/2f + assets.h);
+        font.setColor(Color.WHITE);
+    }
+
+
     public void renderLost(){
         batch.draw(assets.backgrounds[3], -668, -266);
 
@@ -457,6 +554,7 @@ public class Renderer {
         font.getData().setScale(1.5f);
         assets.setGlyphLayout("DISINTEGRATED.");
         font.draw(batch, glyphLayout, Main.SCREEN_WIDTH/2f - assets.w/2, Main.SCREEN_HEIGHT/2f + assets.h);
+        font.setColor(Color.WHITE);
     }
     public void  renderDebugUI(){
 //        for (int x = 0; x < touchRegion.cardTouchRegionPolys.size(); x++){
@@ -467,17 +565,17 @@ public class Renderer {
 //            shape.polygon(poly.getTransformedVertices());
 //        }
 
-//        shape.polygon(touchRegion.chooseButtonPoly.getTransformedVertices());
-//        shape.polygon(touchRegion.enemyPsykeyPoly.getTransformedVertices());
+//        shape.polygon(touchRegion.switchPsykeyPoly.getTransformedVertices());
+//        shape.polygon(touchRegion.uiTouchRegionPolys.get(3).getTransformedVertices());
 
         //shape.circle(touchPos.x, touchPos.y, 20);
     }
-
+    
     public  int getXPosition(int num){
-        return 120 * (Math.round(((card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).size())/ 2f)) - num);
+        return 120 * (Math.round(((cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).size())/ 2f)) - num);
     }
     public TextureRegion getTexture(int index){
-        return assets.getTexture(card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(index)[0], card.playerHandPileCardTypesNames__.get(main.playerPsykeySelected).get(index)[1]);
+        return assets.getCardTexture(cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(index)[0], cards.playerHandPileCardTypesNames.get(main.playerPsykeySelected).get(index)[1]);
     }
 
     public int findStartPos(int cardCount){
@@ -490,9 +588,10 @@ public class Renderer {
 
     public void configureCam(){
         if (Main.SCREEN_HEIGHT >= 800){
-            cam.translate(Main.SCREEN_WIDTH / 2f, 720 / 2f);
-            cam.zoom = 15.2f;
-            viewport = new FillViewport(MainMenuScreen.GAME_WORLD_WIDTH * Main.aspectRatio, MainMenuScreen.GAME_WORLD_HEIGHT, cam);
+            cam.setToOrtho(false, 1280, 720);
+            cam.translate(Main.SCREEN_WIDTH/4.5f, 0);
+            cam.zoom =8.2f;
+            viewport = new ExtendViewport(MainMenuScreen.GAME_WORLD_WIDTH * Main.aspectRatio, MainMenuScreen.GAME_WORLD_HEIGHT, cam);
 
         } else {
             cam.translate(Main.SCREEN_WIDTH / 2f, 720 / 2f);

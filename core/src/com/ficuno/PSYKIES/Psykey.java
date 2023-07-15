@@ -1,4 +1,4 @@
-package com.ficuno.creature;
+package com.ficuno.PSYKIES;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
@@ -34,7 +34,7 @@ public class Psykey {
             {0,8,0},
             {0,0,5},
             {3,4,0},
-            {0,0,0},
+            {2,2,2},
             {0,0,0},
             {0,0,3},
             {3,0,0},
@@ -54,7 +54,7 @@ public class Psykey {
             {0,2,0},
             {0,2,3},
             {1,2,0},
-            {0,0,0},
+            {2,2,2},
             {3,3,4},
             {2,3,2},
             {3,2,2},
@@ -75,7 +75,7 @@ public class Psykey {
             56,
             43,
             50,
-            58,
+            53,
             47,
             45,
             42,
@@ -85,7 +85,7 @@ public class Psykey {
             43,
     };
     String name;
-    String statusEffect;
+    TextureRegion statusEffect;
     int idDefenseValue;
     int egoDefenseValue;
     int superegoDefenseValue;

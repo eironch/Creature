@@ -1,4 +1,4 @@
-package com.ficuno.creature;
+package com.ficuno.PSYKIES;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;

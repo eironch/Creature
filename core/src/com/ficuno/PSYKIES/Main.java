@@ -1,4 +1,4 @@
-package com.ficuno.creature;
+package com.ficuno.PSYKIES;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -10,7 +10,7 @@ import java.util.List;
 public class Main {
     Psykey[] playerPsykey;
     Psykey[] enemyPsykey;
-    Card card;
+    Cards cards;
     Controller controller;
     Renderer renderer;
     TouchRegion touchRegion;
@@ -47,9 +47,13 @@ public class Main {
     boolean showCardPlayed;
     int playerPsykeySelected;
     int enemyPsykeySelected;
-    boolean chosePsykey;
-    Starter starter;
-    Vector2 starterSpotlightPos;
+    final static int NOT_CHOSEN = 0;
+    final  static int CHOSEN = 1;
+    final static int CHANGE = 2;
+    int choicePsykeyState;
+    Choose choose;
+    Vector2 choiceSpotlightPos;
+    Change change;
 
     public Main () {loadGame();}
 
@@ -63,25 +67,24 @@ public class Main {
         playerPsykeyRef = new Psykey[2];
         enemyPsykey = new Psykey[2];
         enemyPsykeyRef = new Psykey[2];
-        starterSpotlightPos = new Vector2();
+        choiceSpotlightPos = new Vector2();
         playerPlayIcon = new TextureRegion[2];
         enemyPlayIcon = new TextureRegion[2];
 
-        chosePsykey = false;
-
-//        playerPsykey[1] = new Psykey("Seduira");
-//        playerPsykeyRef[1] = new Psykey("Seduira");
-        enemyPsykey[0] = new Psykey("Ditzard");
-        enemyPsykeyRef[0] = new Psykey("Ditzard");
+        choicePsykeyState = NOT_CHOSEN;
 
         assets = new Assets();
         touchRegion = new TouchRegion(this);
-        card = new Card(this);
+        change = new Change(this);
+        cards = new Cards(this);
         encounter = new Encounter(this);
-        starter = new Starter(this);
+        choose = new Choose(this);
         renderer = new Renderer(this);
         controller = new Controller(this);
 
+        assets.encounterMusic.setVolume(0.15f);
+        assets.encounterMusic.setLooping(true);
+        assets.encounterMusic.play();
         actionsMenuState = assets.actionsIconClose;
     }
 
@@ -89,5 +92,12 @@ public class Main {
         renderer.render(deltaTime);
         controller.processKeys(deltaTime);
         encounter.update(deltaTime);
+    }
+
+    public void randomizeEnemy(){
+        enemyPsykey[0] = new Psykey(Psykey.names[(int)(Math.random() * Psykey.names.length)]);
+        enemyPsykey[0].healthPoints -= 5;
+        enemyPsykeyRef[0] = new Psykey(enemyPsykey[0].name);
+        enemyPsykeyRef[0].healthPoints -= 5;
     }
 }

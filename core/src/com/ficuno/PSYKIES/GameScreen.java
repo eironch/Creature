@@ -1,13 +1,17 @@
-package com.ficuno.creature;
+package com.ficuno.PSYKIES;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.utils.TimeUtils;
 
 public class GameScreen extends CreatureScreen {
     Main main;
-    static boolean lost = false;
+    final static int NEITHER = 0;
+    final static int LOST = 1;
+    final static int WON = 2;
+    final static int WAIT = 3;
+
+    static int gameState  = NEITHER;
     static boolean retry = false;
 
     public GameScreen(Game game) {super(game);}
@@ -25,8 +29,7 @@ public class GameScreen extends CreatureScreen {
         if (!retry){
             main.update(delta);
         } else {
-            retry = false;
-
+            gameState = NEITHER;
             game.setScreen(new MainMenuScreen(game));
             dispose();
         }

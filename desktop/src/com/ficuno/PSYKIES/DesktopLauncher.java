@@ -9,6 +9,7 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(30);
 		config.setWindowedMode(1280, 720);
+
 		config.useVsync(true);
 		config.setTitle("PSYKIES");
 		config.setWindowIcon("android/res/mipmap-mdpi/ic_launcher.png");

@@ -1,6 +1,5 @@
 package com.ficuno.PSYKIES;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -13,7 +12,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
@@ -197,7 +195,7 @@ public class Renderer {
                 renderOtherUI();
                 renderPsykies();
                 renderText();
-                renderOverlay(deltaTime);
+                renderOverlay();
             } else if (main.choicePsykeyState == Main.NOT_CHOSEN) {
                 choose.render(batch, font);
             } else {
@@ -216,7 +214,7 @@ public class Renderer {
         shape.end();
     }
 
-    public void renderOverlay(float deltaTime){
+    public void renderOverlay(){
         showStats();
 
         if (main.showOverlay){
@@ -244,18 +242,25 @@ public class Renderer {
     public void renderText(){
         //font.draw(batch, "Deal 15 damage to the enemy and inflict stun.", 100,100);
 
-        if (Main.SCREEN_HEIGHT < 800){
-            assets.setGlyphLayout(cards.playerDrawPileCardTypesNames.get(main.playerPsykeySelected).size());
-            font.draw(batch, glyphLayout, (Main.SCREEN_WIDTH - (104 + assets.drawPileIcon.getRegionWidth())) - assets.w/2, 208 + assets.h);
-
-            assets.setGlyphLayout(cards.playerDiscardPileCardTypesNames.get(main.playerPsykeySelected).size());
-            font.draw(batch, glyphLayout, (100 + assets.drawPileIcon.getRegionWidth()) - assets.w/2, 208 + assets.h);
-        } else {
+        if (Main.aspectRatio >= 1.8){
             assets.setGlyphLayout(cards.playerDrawPileCardTypesNames.get(main.playerPsykeySelected).size());
             font.draw(batch, glyphLayout, (Main.SCREEN_WIDTH - (404 + assets.drawPileIcon.getRegionWidth())) - assets.w/2, 208 + assets.h);
 
             assets.setGlyphLayout(cards.playerDiscardPileCardTypesNames.get(main.playerPsykeySelected).size());
             font.draw(batch, glyphLayout, (400 + assets.drawPileIcon.getRegionWidth()) - assets.w/2, 208 + assets.h);
+
+        } else if (Main.aspectRatio <= 1.71){
+            assets.setGlyphLayout(cards.playerDrawPileCardTypesNames.get(main.playerPsykeySelected).size());
+            font.draw(batch, glyphLayout, ((Main.SCREEN_WIDTH + 150) - (104 + assets.drawPileIcon.getRegionWidth())) - assets.w/2, 208 + assets.h);
+
+            assets.setGlyphLayout(cards.playerDiscardPileCardTypesNames.get(main.playerPsykeySelected).size());
+            font.draw(batch, glyphLayout, (250 + assets.drawPileIcon.getRegionWidth()) - assets.w/2, 208 + assets.h);
+        } else {
+            assets.setGlyphLayout(cards.playerDrawPileCardTypesNames.get(main.playerPsykeySelected).size());
+            font.draw(batch, glyphLayout, (Main.SCREEN_WIDTH - (104 + assets.drawPileIcon.getRegionWidth())) - assets.w/2, 208 + assets.h);
+
+            assets.setGlyphLayout(cards.playerDiscardPileCardTypesNames.get(main.playerPsykeySelected).size());
+            font.draw(batch, glyphLayout, (100 + assets.drawPileIcon.getRegionWidth()) - assets.w/2, 208 + assets.h);
         }
 
         if (!main.showStatsPlayer){
@@ -282,7 +287,50 @@ public class Renderer {
     }
 
     public void renderOtherUI(){
-        if (Main.SCREEN_HEIGHT < 800){
+        if (Main.aspectRatio >= 1.8) {
+            batch.draw(assets.helpIcon, 300, Creature.HEIGHT - (assets.helpIcon.getRegionHeight() + 10));
+            batch.draw(assets.menuIcon, (Main.SCREEN_WIDTH - 300) - (assets.menuIcon.getRegionWidth() + 10),
+                    Creature.HEIGHT - (assets.menuIcon.getRegionHeight() + 10));
+            batch.draw(assets.bagIcon, 310, 10);
+            batch.draw(main.actionsMenuState, (Main.SCREEN_WIDTH - 300) - (main.actionsMenuState.getRegionWidth() + 10), 10);
+
+            touchRegion.uiTouchRegionPolys.get(0).setPosition(300, Creature.HEIGHT - (assets.helpIcon.getRegionHeight() + 10));
+            touchRegion.uiTouchRegionPolys.get(1).setPosition((Main.SCREEN_WIDTH - 300) - (assets.menuIcon.getRegionWidth() + 10),
+                    Creature.HEIGHT - (assets.menuIcon.getRegionHeight() + 10));
+            touchRegion.uiTouchRegionPolys.get(2).setPosition(310, 10);
+            touchRegion.uiTouchRegionPolys.get(3).setPosition((Main.SCREEN_WIDTH - 300) - (assets.actionsIconClose.getRegionWidth() + 10), 10);
+
+            if (main.actionsMenuState == assets.actionsIconOpen) {
+                touchRegion.switchPsykeyPoly.setPosition((Main.SCREEN_WIDTH - 300) - (assets.actionsIconClose.getRegionWidth() + 10), (assets.actionsIconClose.getRegionHeight() * 2 + 25));
+            } else {
+                touchRegion.switchPsykeyPoly.setPosition(-404, -404);
+            }
+
+            batch.draw(assets.discardPileIcon, 404, 140);
+            batch.draw(assets.drawPileIcon, (Main.SCREEN_WIDTH - 300) - (104 + assets.drawPileIcon.getRegionWidth()), 140);
+        }  else if (Main.aspectRatio <= 1.71){
+            batch.draw(assets.helpIcon, -150, Creature.HEIGHT - (assets.helpIcon.getRegionHeight() + 10));
+            batch.draw(assets.menuIcon, (Main.SCREEN_WIDTH + 150) - (assets.menuIcon.getRegionWidth() + 10),
+                    Creature.HEIGHT - (assets.menuIcon.getRegionHeight() + 10));
+            batch.draw(assets.bagIcon, -140, 10);
+            batch.draw(main.actionsMenuState, (Main.SCREEN_WIDTH + 150) - (main.actionsMenuState.getRegionWidth() + 10), 10);
+
+            touchRegion.uiTouchRegionPolys.get(0).setPosition(- 150, Creature.HEIGHT - (assets.helpIcon.getRegionHeight() + 10));
+            touchRegion.uiTouchRegionPolys.get(1).setPosition((Main.SCREEN_WIDTH + 150) - (assets.menuIcon.getRegionWidth() + 10),
+                    Creature.HEIGHT - (assets.menuIcon.getRegionHeight() + 10));
+            touchRegion.uiTouchRegionPolys.get(2).setPosition(- 140, 10);
+            touchRegion.uiTouchRegionPolys.get(3).setPosition((Main.SCREEN_WIDTH + 150) - (assets.actionsIconClose.getRegionWidth() + 10), 10);
+
+            if (main.actionsMenuState == assets.actionsIconOpen){
+                touchRegion.switchPsykeyPoly.setPosition((Main.SCREEN_WIDTH + 150) - (assets.actionsIconClose.getRegionWidth() + 10), (assets.actionsIconClose.getRegionHeight() * 2 + 25));
+            } else {
+                touchRegion.switchPsykeyPoly.setPosition(-404, -404);
+            }
+
+            batch.draw(assets.discardPileIcon, -54, 140);
+            batch.draw(assets.drawPileIcon, (Main.SCREEN_WIDTH + 150) - (104 + assets.drawPileIcon.getRegionWidth()), 140);
+
+        } else {
             batch.draw(assets.helpIcon, 0, Creature.HEIGHT - (assets.helpIcon.getRegionHeight() + 10));
             batch.draw(assets.menuIcon, Main.SCREEN_WIDTH - (assets.menuIcon.getRegionWidth() + 10),
                     Creature.HEIGHT - (assets.menuIcon.getRegionHeight() + 10));
@@ -303,27 +351,6 @@ public class Renderer {
 
             batch.draw(assets.discardPileIcon, 104, 140);
             batch.draw(assets.drawPileIcon, Main.SCREEN_WIDTH - (104 + assets.drawPileIcon.getRegionWidth()), 140);
-        } else {
-            batch.draw(assets.helpIcon, 300, Creature.HEIGHT - (assets.helpIcon.getRegionHeight() + 10));
-            batch.draw(assets.menuIcon, (Main.SCREEN_WIDTH - 300) - (assets.menuIcon.getRegionWidth() + 10),
-                    Creature.HEIGHT - (assets.menuIcon.getRegionHeight() + 10));
-            batch.draw(assets.bagIcon, 310, 10);
-            batch.draw(main.actionsMenuState, (Main.SCREEN_WIDTH - 300) - (main.actionsMenuState.getRegionWidth() + 10), 10);
-
-            touchRegion.uiTouchRegionPolys.get(0).setPosition(300, Creature.HEIGHT - (assets.helpIcon.getRegionHeight() + 10));
-            touchRegion.uiTouchRegionPolys.get(1).setPosition((Main.SCREEN_WIDTH - 300) - (assets.menuIcon.getRegionWidth() + 10),
-                    Creature.HEIGHT - (assets.menuIcon.getRegionHeight() + 10));
-            touchRegion.uiTouchRegionPolys.get(2).setPosition(310, 10);
-            touchRegion.uiTouchRegionPolys.get(3).setPosition((Main.SCREEN_WIDTH - 300) - (assets.actionsIconClose.getRegionWidth() + 10), 10);
-
-            if (main.actionsMenuState == assets.actionsIconOpen){
-                touchRegion.switchPsykeyPoly.setPosition((Main.SCREEN_WIDTH - 300) - (assets.actionsIconClose.getRegionWidth() + 10), (assets.actionsIconClose.getRegionHeight() * 2 + 25));
-            } else {
-                touchRegion.switchPsykeyPoly.setPosition(-404, -404);
-            }
-
-            batch.draw(assets.discardPileIcon, 404, 140);
-            batch.draw(assets.drawPileIcon, (Main.SCREEN_WIDTH - 300) - (104 + assets.drawPileIcon.getRegionWidth()), 140);
         }
     }
 
@@ -340,7 +367,7 @@ public class Renderer {
 
             if (playerPsykey[main.playerPsykeySelected].statusEffect != null){
                 batch.draw(playerPsykey[main.playerPsykeySelected].statusEffect,
-                        ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH/4f)) - 16, 296);
+                        ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH/8f)) - 176, 296);
             }
 
         }
@@ -353,12 +380,12 @@ public class Renderer {
 
             if (main.enemyPlayIcon[main.enemyPsykeySelected] != null){
                 batch.draw(main.enemyPlayIcon[main.enemyPsykeySelected],
-                        ((Main.SCREEN_WIDTH / 2f) - (Main.SCREEN_WIDTH / 8f)) + 144, 500);
+                        ((Main.SCREEN_WIDTH / 2f) + (Main.SCREEN_WIDTH / 8f)) - 176, 500);
             }
 
             if (enemyPsykey[main.enemyPsykeySelected].statusEffect != null){
                 batch.draw(enemyPsykey[main.enemyPsykeySelected].statusEffect,
-                        ((Main.SCREEN_WIDTH / 2f) + (Main.SCREEN_WIDTH/4f)) - 64, 604);
+                        ((Main.SCREEN_WIDTH / 2f) + (Main.SCREEN_WIDTH/8f)) + 96, 604);
             }
         }
     }
@@ -466,7 +493,6 @@ public class Renderer {
     }
 
     public void showStats(){
-        
         if (main.showStatsEnemy){
             batch.draw(assets.statsDisplayTexture, (Main.SCREEN_WIDTH/2f + 160) - assets.statsDisplayTexture.getWidth()/2f, 500);
             
@@ -542,7 +568,7 @@ public class Renderer {
         font.setColor(new Color(99/255f, 155/255f, 255/255f, 255/255f));
         font.getData().setScale(1.5f);
         assets.setGlyphLayout("REMARKABLE!");
-        font.draw(batch, glyphLayout, Main.SCREEN_WIDTH/2f - assets.w/2, Main.SCREEN_HEIGHT/2f + assets.h);
+        font.draw(batch, glyphLayout, Main.SCREEN_WIDTH/2f - assets.w/2, 360 + assets.h);
         font.setColor(Color.WHITE);
     }
 
@@ -553,7 +579,7 @@ public class Renderer {
         font.setColor(new Color(172/255f, 50/255f, 50/255f, 255/255f));
         font.getData().setScale(1.5f);
         assets.setGlyphLayout("DISINTEGRATED.");
-        font.draw(batch, glyphLayout, Main.SCREEN_WIDTH/2f - assets.w/2, Main.SCREEN_HEIGHT/2f + assets.h);
+        font.draw(batch, glyphLayout, Main.SCREEN_WIDTH/2f - assets.w/2, 360 + assets.h);
         font.setColor(Color.WHITE);
     }
     public void  renderDebugUI(){
@@ -587,12 +613,15 @@ public class Renderer {
     }
 
     public void configureCam(){
-        if (Main.SCREEN_HEIGHT >= 800){
-            cam.setToOrtho(false, 1280, 720);
-            cam.translate(Main.SCREEN_WIDTH/4.5f, 0);
-            cam.zoom =8.2f;
+        if (Main.aspectRatio >= 1.8){
+            cam.translate(Main.SCREEN_WIDTH/2f, 720 / 2f);
+            cam.zoom = 7.4f;
             viewport = new ExtendViewport(MainMenuScreen.GAME_WORLD_WIDTH * Main.aspectRatio, MainMenuScreen.GAME_WORLD_HEIGHT, cam);
 
+        } else if (Main.aspectRatio <= 1.71){
+            cam.translate(Main.SCREEN_WIDTH / 2f, 720 / 2f);
+            viewport = new ExtendViewport(MainMenuScreen.GAME_WORLD_WIDTH + 50 * Main.aspectRatio, MainMenuScreen.GAME_WORLD_HEIGHT, cam);
+            cam.zoom = 15.2f;
         } else {
             cam.translate(Main.SCREEN_WIDTH / 2f, 720 / 2f);
             viewport = new ExtendViewport(MainMenuScreen.GAME_WORLD_WIDTH * Main.aspectRatio, MainMenuScreen.GAME_WORLD_HEIGHT, cam);

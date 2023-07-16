@@ -10,7 +10,6 @@ public class GameScreen extends CreatureScreen {
     final static int LOST = 1;
     final static int WON = 2;
     final static int WAIT = 3;
-
     static int gameState  = NEITHER;
     static boolean retry = false;
 

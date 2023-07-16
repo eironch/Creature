@@ -34,7 +34,7 @@ public class Controller {
         this.change = main.change;
     }
 
-    public void processKeys(float deltaTime){
+    public void processKeys(){
         if (GameScreen.gameState == GameScreen.LOST){
             if (Gdx.input.justTouched()){
                 GameScreen.retry = true;
@@ -55,6 +55,8 @@ public class Controller {
                 choose.psykeyIndex = 404;
                 main.choicePsykeyState = Main.NOT_CHOSEN;
             }
+
+            return;
         }
 
         if (Gdx.input.justTouched()){

@@ -27,7 +27,6 @@ public class MainMenuScreen extends CreatureScreen {
     OrthographicCamera cam;
     GlyphLayout glyphLayout;
     float w;
-    float h;
     FreeTypeFontGenerator fontGenerator;
     FreeTypeFontGenerator.FreeTypeFontParameter fontParameter;
     final static float GAME_WORLD_WIDTH = 100;
@@ -46,7 +45,6 @@ public class MainMenuScreen extends CreatureScreen {
     boolean showCredits;
     public MainMenuScreen(Game game){
         super(game);
-
         fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
         fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         fontParameter.size = 25;
@@ -62,7 +60,6 @@ public class MainMenuScreen extends CreatureScreen {
         batch = new SpriteBatch();
         cam = new OrthographicCamera();
 
-        configureCam();
         buttonPolys = new Polygon[]{new Polygon(new float[]{0, 0, 320, 0, 320, 80, 0, 80}),
                 new Polygon(new float[]{0, 0, 320, 0, 320, 80, 0, 80}),
                 new Polygon(new float[]{0, 0, 320, 0, 320, 80, 0, 80})
@@ -81,6 +78,7 @@ public class MainMenuScreen extends CreatureScreen {
         buttonPolys[1].setPosition(Main.SCREEN_WIDTH/2f - buttonIcon.getRegionWidth()/2f, Main.SCREEN_HEIGHT/2f - (buttonIcon.getRegionHeight() + 60));
         buttonPolys[2].setPosition(Main.SCREEN_WIDTH/2f - buttonIcon.getRegionWidth()/2f, Main.SCREEN_HEIGHT/2f - (buttonIcon.getRegionHeight() * 2 + 80));
 
+        configureCam();
         menuMusic.setVolume(1f);
         menuMusic.setLooping(true);
         menuMusic.play();
@@ -177,6 +175,7 @@ public class MainMenuScreen extends CreatureScreen {
                 game.setScreen(new GameScreen(game));
                 uiSound.play(0.5f);
                 menuMusic.stop();
+                disposeAssets();
             } else if (buttonPolys[1].contains(touchPos.x, touchPos.y)) {
                 showCredits = true;
                 uiSound.play(0.5f);
@@ -200,8 +199,28 @@ public class MainMenuScreen extends CreatureScreen {
             cam.zoom = 7.2f;
         }
     }
+
     @Override
-    public void hide (){}
+    public void show (){
+        font = fontGenerator.generateFont(fontParameter);
+        batch = new SpriteBatch();
+        menuBackgroundTexture = new Texture("menuBackgroundTexture.png");
+        psykiesLogoTexture = new Texture("psykiesLogoTexture.png");
+        buttonTexture = new Texture(Gdx.files.internal("chooseButtonTexture.png"));
+    }
+
+    @Override
+    public void hide (){
+
+    }
+
+    public void disposeAssets(){
+        menuBackgroundTexture.dispose();
+        psykiesLogoTexture.dispose();
+        buttonTexture.dispose();
+        font.dispose();
+        batch.dispose();
+    }
 
     @Override
     public void resize(int width, int height) {

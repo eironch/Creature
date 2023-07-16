@@ -30,8 +30,8 @@ public class Encounter {
         this.assets = main.assets;
     }
 
-    public void update(float deltaTime){
-        if (main.turnState != Main.MID_TURN && main.turnState != Main.NEXT_TURN && main.turnState != Main.PRE_TURN){
+    public void update(){
+        if (main.turnState != Main.MID_TURN && main.turnState != Main.NEXT_TURN && main.turnState != Main.PRE_TURN || GameScreen.gameState == GameScreen.WAIT){
             return;
         }
 
@@ -250,7 +250,6 @@ public class Encounter {
         enemyTurn();
     }
     public void resetStats(Psykey[] psykey, Psykey[] psykeyRef, int psykeySelected){
-        System.out.println("");
         psykey[psykeySelected].idProwessValue = psykeyRef[psykeySelected].idProwessValue;
         psykey[psykeySelected].egoProwessValue = psykeyRef[psykeySelected].egoProwessValue;
         psykey[psykeySelected].superegoProwessValue = psykeyRef[psykeySelected].superegoProwessValue;

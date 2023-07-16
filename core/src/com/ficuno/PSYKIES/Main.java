@@ -62,7 +62,7 @@ public class Main {
         for (int x = 0; x < 5; x++){
             handCardSelected.add(0);
         }
-
+        System.out.println(Main.aspectRatio);
         playerPsykey = new Psykey[2];
         playerPsykeyRef = new Psykey[2];
         enemyPsykey = new Psykey[2];
@@ -90,8 +90,8 @@ public class Main {
 
     public void update(float deltaTime){
         renderer.render(deltaTime);
-        controller.processKeys(deltaTime);
-        encounter.update(deltaTime);
+        controller.processKeys();
+        encounter.update();
     }
 
     public void randomizeEnemy(){

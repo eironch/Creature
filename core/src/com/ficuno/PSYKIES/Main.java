@@ -3,9 +3,7 @@ package com.ficuno.PSYKIES;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-
 import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
     Psykey[] playerPsykey;
@@ -20,7 +18,7 @@ public class Main {
     final static int SCREEN_HEIGHT = Gdx.graphics.getHeight();
     final static float aspectRatio = (float) Gdx.graphics.getWidth() / (float) Gdx.graphics.getHeight();
     final static int maxCards = 36;
-    List<Integer> handCardSelected = new ArrayList<>();
+    ArrayList<Integer> handCardSelected = new ArrayList<>();
     Psykey[] playerPsykeyRef;
     Psykey[] enemyPsykeyRef;
     final static int NOT_DONE = 0;

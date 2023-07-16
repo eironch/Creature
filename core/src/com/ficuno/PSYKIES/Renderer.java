@@ -13,9 +13,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-
 import java.util.ArrayList;
-import java.util.List;
 
 public class Renderer {
     Main main;
@@ -27,7 +25,7 @@ public class Renderer {
     BitmapFont font;
     GlyphLayout glyphLayout;
     Viewport viewport;
-    List<Vector2> handCardPos = new ArrayList<>();
+    ArrayList<Vector2> handCardPos = new ArrayList<>();
     TouchRegion touchRegion;
     Vector3 touchPos;
     Assets assets;
@@ -35,8 +33,8 @@ public class Renderer {
     Psykey[] playerPsykey;
     Psykey[] enemyPsykey;
     Psykey[] enemyPsykeyRef;
-    List<Vector2> handCardTextPos = new ArrayList<>();
-    List<Vector2> handCardTextPos2 = new ArrayList<>();
+    ArrayList<Vector2> handCardTextPos = new ArrayList<>();
+    ArrayList<Vector2> handCardTextPos2 = new ArrayList<>();
     Encounter encounter;
     Vector2 playerCardDisplayPos;
     Vector2 enemyCardDisplayPos;

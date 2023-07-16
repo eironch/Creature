@@ -1,7 +1,6 @@
 package com.ficuno.PSYKIES;
 
 import com.badlogic.gdx.math.MathUtils;
-
 import java.util.Arrays;
 import java.util.Objects;
 

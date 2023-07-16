@@ -1,6 +1,5 @@
 package com.ficuno.PSYKIES;
 
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -18,7 +17,6 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class MainMenuScreen extends CreatureScreen {
@@ -188,11 +186,15 @@ public class MainMenuScreen extends CreatureScreen {
     }
 
     public void configureCam(){
-        if (Main.SCREEN_HEIGHT >= 800){
-            cam.translate(Main.SCREEN_WIDTH / 2f, Main.SCREEN_WIDTH/4f + 20);
-            cam.zoom = 15.2f;
-            viewport = new FillViewport(MainMenuScreen.GAME_WORLD_WIDTH * Main.aspectRatio, MainMenuScreen.GAME_WORLD_HEIGHT, cam);
+        if (Main.aspectRatio >= 1.8){
+            cam.translate(Main.SCREEN_WIDTH/2f, 720 / 2f);
+            cam.zoom = 7.4f;
+            viewport = new ExtendViewport(MainMenuScreen.GAME_WORLD_WIDTH * Main.aspectRatio, MainMenuScreen.GAME_WORLD_HEIGHT, cam);
 
+        } else if (Main.aspectRatio <= 1.71){
+            cam.translate(Main.SCREEN_WIDTH / 2f, 720 / 2f);
+            viewport = new ExtendViewport(MainMenuScreen.GAME_WORLD_WIDTH + 50 * Main.aspectRatio, MainMenuScreen.GAME_WORLD_HEIGHT, cam);
+            cam.zoom = 15.2f;
         } else {
             cam.translate(Main.SCREEN_WIDTH / 2f, 720 / 2f);
             viewport = new ExtendViewport(MainMenuScreen.GAME_WORLD_WIDTH * Main.aspectRatio, MainMenuScreen.GAME_WORLD_HEIGHT, cam);

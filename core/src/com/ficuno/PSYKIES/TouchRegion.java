@@ -1,14 +1,12 @@
 package com.ficuno.PSYKIES;
 
 import com.badlogic.gdx.math.Polygon;
-
 import java.util.ArrayList;
-import java.util.List;
 
 public class TouchRegion {
     Main main;
     ArrayList<ArrayList<Polygon>> cardTouchRegionPolys;
-    List<Polygon> uiTouchRegionPolys = new ArrayList<>();
+    ArrayList<Polygon> uiTouchRegionPolys = new ArrayList<>();
     Polygon enemyPsykeyPoly;
     Polygon playerPsykeyPoly;
     Polygon[] choicePsykeyPolys;
@@ -26,9 +24,9 @@ public class TouchRegion {
 
         enemyPsykeyPoly = new Polygon(new float[]{0, 0, 160, 0, 160, 160, 0, 160});
         playerPsykeyPoly = new Polygon(new float[]{0, 0, 160, 0, 160, 160, 0, 160});
-        cardTouchRegionPolys = new ArrayList<ArrayList<Polygon>>();
-        cardTouchRegionPolys.add(new ArrayList<Polygon>());
-        cardTouchRegionPolys.add(new ArrayList<Polygon>());
+        cardTouchRegionPolys = new ArrayList<>();
+        cardTouchRegionPolys.add(new ArrayList<>());
+        cardTouchRegionPolys.add(new ArrayList<>());
 
         createChoosePolys();
 

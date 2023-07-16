@@ -1,8 +1,6 @@
 package com.ficuno.PSYKIES;
 
-
 import com.badlogic.gdx.Gdx;
-
 import java.util.Arrays;
 import java.util.Objects;
 

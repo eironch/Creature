@@ -24,9 +24,9 @@ public class TouchRegion {
 
         enemyPsykeyPoly = new Polygon(new float[]{0, 0, 160, 0, 160, 160, 0, 160});
         playerPsykeyPoly = new Polygon(new float[]{0, 0, 160, 0, 160, 160, 0, 160});
-        cardTouchRegionPolys = new ArrayList<>();
-        cardTouchRegionPolys.add(new ArrayList<>());
-        cardTouchRegionPolys.add(new ArrayList<>());
+        cardTouchRegionPolys = new ArrayList<ArrayList<Polygon>>();
+        cardTouchRegionPolys.add(new ArrayList<Polygon>());
+        cardTouchRegionPolys.add(new ArrayList<Polygon>());
 
         createChoosePolys();
 

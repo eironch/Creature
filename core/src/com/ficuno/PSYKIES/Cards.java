@@ -39,20 +39,20 @@ public class Cards {
         this.touchRegion = main.touchRegion;
         this.assets = main.assets;
 
-        playerDrawPileCardTypesNames = new ArrayList<>();
-        playerHandPileCardTypesNames = new ArrayList<>();
-        playerDiscardPileCardTypesNames = new ArrayList<>();
-        enemyDrawPileCardTypesNames = new ArrayList<>();
-        enemyHandPileCardTypesNames = new ArrayList<>();
-        enemyDiscardPileCardTypesNames = new ArrayList<>();
+        playerDrawPileCardTypesNames = new ArrayList<ArrayList<String[]>>();
+        playerHandPileCardTypesNames = new ArrayList<ArrayList<String[]>>();
+        playerDiscardPileCardTypesNames = new ArrayList<ArrayList<String[]>>();
+        enemyDrawPileCardTypesNames = new ArrayList<ArrayList<String[]>>();
+        enemyHandPileCardTypesNames = new ArrayList<ArrayList<String[]>>();
+        enemyDiscardPileCardTypesNames = new ArrayList<ArrayList<String[]>>();
 
         for (int i = 0; i < 2; i++){
-            playerDrawPileCardTypesNames.add(new ArrayList<>());
-            playerHandPileCardTypesNames.add(new ArrayList<>());
-            playerDiscardPileCardTypesNames.add(new ArrayList<>());
-            enemyDrawPileCardTypesNames.add(new ArrayList<>());
-            enemyHandPileCardTypesNames.add(new ArrayList<>());
-            enemyDiscardPileCardTypesNames.add(new ArrayList<>());
+            playerDrawPileCardTypesNames.add(new ArrayList<String[]>());
+            playerHandPileCardTypesNames.add(new ArrayList<String[]>());
+            playerDiscardPileCardTypesNames.add(new ArrayList<String[]>());
+            enemyDrawPileCardTypesNames.add(new ArrayList<String[]>());
+            enemyHandPileCardTypesNames.add(new ArrayList<String[]>());
+            enemyDiscardPileCardTypesNames.add(new ArrayList<String[]>());
         }
     }
 
